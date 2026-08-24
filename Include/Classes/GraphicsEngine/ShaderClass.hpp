@@ -105,8 +105,16 @@ class Shader {
         void Delete() {
             glDeleteProgram(ShaderProgram);
         }
+        
+        static Shader FromSource(const char* VertexSrc, const char* FragmentSrc) {
+            Shader S;
+            S.VertexShaderSource = VertexSrc;
+            S.FragmentShaderSource = FragmentSrc;
+            return S;
+        }
     
         private:
+            Shader() = default;
             string VertexShaderSource;
             string FragmentShaderSource;
             vector<Uniform> _Uniforms;

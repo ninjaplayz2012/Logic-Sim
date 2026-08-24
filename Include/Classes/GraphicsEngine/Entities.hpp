@@ -23,7 +23,7 @@ using std::vector, std::optional, std::function;
 class BaseEntity {
     public:
         vector<BaseVector> Vertices{};
-        optional<vector<int>> Indices{};
+        optional<vector<GLuint>> Indices{};
         vector<Uniform> UniformIds{};
         double ZIndex = 0.0;
         
@@ -33,28 +33,28 @@ class BaseEntity {
         
         Shader ShaderProgram;
         
-        virtual void Render(GLuint DrawType);
-        virtual void SetDefaultUniforms();
-        virtual void SetUniform(const char *Name, std::function<void(GLint)> setter);
-        virtual void GetSize(glm::vec2 WindowSize);
-        virtual void Generate();
-        
+        virtual void Render(GLuint DrawType) = 0;
+        virtual void SetDefaultUniforms() = 0;
+        virtual void SetUniform(const char *Name, std::function<void(GLint)> setter) = 0;
+        virtual void GetSize(glm::vec2 WindowSize) = 0;
+        virtual void Generate() = 0;
+
         virtual double Rotation() const {
             return _Rotation;
         }
-        
+
         virtual void Rotation(double Value) {
             if (Value == _Rotation) return;
             
             _Rotation = Value;
             RotationMatrix = MathUtils::RotationMatrix(Value);
         }
-        
-        inline virtual bool operator<(BaseEntity Entity) {
+
+        inline virtual bool operator<(const BaseEntity& Entity) {
             return ZIndex < Entity.ZIndex;
         }
         
-        BaseEntity(Shader ShaderProgram, vector<BaseVector> Vertices = {}, optional<vector<int>> Indices = std::nullopt) : ShaderProgram(ShaderProgram), Vertices(Vertices), Indices(Indices) {}
+        BaseEntity(Shader ShaderProgram, vector<BaseVector> Vertices = {}, optional<vector<GLuint>> Indices = std::nullopt) : ShaderProgram(ShaderProgram), Vertices(Vertices), Indices(Indices) {}
         virtual ~BaseEntity() = default;
     protected:
         double _Rotation = 0.0;
@@ -124,7 +124,17 @@ class Entity : public BaseEntity {
             VAO.Unbind();
         };
         
-        Entity(Shader ShaderProgram, vector<BaseVector> Vertices = {}, optional<vector<int>> Indices = std::nullopt) : BaseEntity(ShaderProgram, Vertices, Indices) {}
+        Entity(Shader ShaderProgram, vector<BaseVector> Vertices = {}, optional<vector<GLuint>> GLuint = std::nullopt) : BaseEntity(ShaderProgram, Vertices, Indices) {
+            vector<float> FlatData;
+            
+            for (auto &Vertex : Vertices) {
+                auto Unpacked = Vertex.Unpack();
+                FlatData.insert(FlatData.end(), Unpacked.begin(), Unpacked.end());
+            }
+            
+            VBO.Create(FlatData.data(), FlatData.size() * sizeof(float));
+            if (Indices.has_value()) EBO.Create(Indices.value().data(), Indices.value().size());
+        }
 };
 
 class TextureEntity : public BaseEntity {

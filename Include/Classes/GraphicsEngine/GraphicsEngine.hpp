@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
+#include <memory>
 #include <stack>
-using std::vector, std::stack;
+using std::vector, std::stack, std::unique_ptr;
 
 #include "Classes/GraphicsEngine/Entities.hpp"
 
@@ -10,25 +11,30 @@ using std::vector, std::stack;
 
 class GraphicsEngine {
     public:
-        vector<BaseEntity> Entities{};
+        vector<unique_ptr<BaseEntity>> Entities{};
         stack<int> FreeIds{};
         
-        int AddEntity(BaseEntity Entity) {
+        int AddEntity(unique_ptr<BaseEntity> Entity) {
             const int Id = !FreeIds.empty() ? FreeIds.top() : Entities.size();
-            if (!FreeIds.empty()) FreeIds.pop();
             
-            Entities[Id] = Entity;
+            if (!FreeIds.empty()) {
+                FreeIds.pop();
+                Entities[Id] = std::move(Entity);
+            } else {
+                Entities.push_back(std::move(Entity));
+            }
             
             return Id;
         }
         
         void RemoveEntity(int Id) {
-            Entities.erase(Entities.begin() + Id);
+            Entities[Id].reset();
+            FreeIds.push(Id);
         }
         
         void Render(GLuint DrawType) {
-            for (auto& Entity : Entities) {
-                Entity.Render(DrawType);
+            for (auto &Entity : Entities) {
+                if (Entity) Entity->Render(DrawType);
             }
         }
         

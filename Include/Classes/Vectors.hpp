@@ -17,11 +17,13 @@ class BaseVector {
         std::optional<std::vector<float>> InstanceBasedData;
         
         // Initializers
-        BaseVector(glm::vec3 InPosition = glm::vec3(0.0f, 0.0f, 0.0f),
-                    glm::vec2 InPositionScale = glm::vec2(0.0f, 0.0f),
-                    std::optional<std::vector<float>> InTexCoord = std::nullopt,
-                    std::optional<std::vector<float>> InColor = std::vector<float>{1.0f, 1.0f, 1.0f, 1.0f},
-                    std::optional<std::vector<float>> InInstanceBasedData = std::nullopt)
+        BaseVector(
+            glm::vec3 InPosition = glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec2 InPositionScale = glm::vec2(0.0f, 0.0f),
+            std::optional<std::vector<float>> InTexCoord = std::nullopt,
+            std::optional<std::vector<float>> InColor = std::vector<float>{1.0f, 1.0f, 1.0f, 1.0f},
+            std::optional<std::vector<float>> InInstanceBasedData = std::nullopt)
+            
             : Position(InPosition)
             , PositionScale(InPositionScale)
             , TexCoord(std::move(InTexCoord))

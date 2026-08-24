@@ -51,8 +51,12 @@ class OpenGLWindow {
         // Functions
         void Display() {
             glfwMakeContextCurrent(Window);
-            glfwSwapInterval(1);
             
+            if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+                throw std::runtime_error("Failed to initialize GLAD");
+            }
+            
+            glfwSwapInterval(1);
             glViewport(0, 0, Size.x, Size.y);
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -96,7 +100,7 @@ class OpenGLWindow {
             SetSize(Size);
             
             for (auto &Entity : GraphicsEngineReference->Entities)
-                Entity.GetSize(Size);
+                Entity->GetSize(Size);
         }
         
         void StartRenderLoop(std::function<void(double)> Callback = nullptr) {
@@ -129,9 +133,9 @@ class OpenGLWindow {
             return Size;
         }
         
-        void SetSize(glm::ivec2 Size) {
-            glViewport(0, 0, Size.x, Size.y);
-            Size = Size;
+        void SetSize(glm::ivec2 InSize) {
+            glViewport(0, 0, InSize.x, InSize.y);
+            Size = InSize;
         }
     
         private:

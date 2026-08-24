@@ -13,3 +13,7 @@
 // --[ Classes ]--
 #include "Classes/GraphicsEngine/GraphicsEngine.hpp"
 #include "Classes/GraphicsEngine/Window.hpp"
+
+// --[ Shaders ]--
+#include "DefaultVertexShader.vert.hpp"
+#include "DefaultFragmentShader.frag.hpp"
