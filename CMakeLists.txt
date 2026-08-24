@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(LogicSim LANGUAGES CXX)
+project(LogicSim LANGUAGES C CXX)
 
 # ------------------------------------------------------------
 # C++ Standard
@@ -22,9 +22,7 @@ file(GLOB_RECURSE SOURCES
 # Executable
 # ------------------------------------------------------------
 
-add_executable(${PROJECT_NAME}
-    ${SOURCES}
-)
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 # ------------------------------------------------------------
 # Include Directories

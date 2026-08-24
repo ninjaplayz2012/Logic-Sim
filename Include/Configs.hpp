@@ -11,3 +11,5 @@
 #include "C:/stb/stb_image.h"
 
 // --[ Classes ]--
+#include "Classes/GraphicsEngine/GraphicsEngine.hpp"
+#include "Classes/GraphicsEngine/Window.hpp"
