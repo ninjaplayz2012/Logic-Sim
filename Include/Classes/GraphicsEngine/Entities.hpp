@@ -66,7 +66,7 @@ class Entity : public BaseEntity {
         glm::vec4 Color{1, 1, 1, 1};
         glm::vec3 Position{0, 0, 0};
         glm::vec2 PositionScale{0, 0};
-        glm::vec2 AnchorPoint{0.5, 0.5};
+        glm::vec2 AnchorPoint{0.5f, 0.5f};
         glm::vec2 Size{};
         double Scale = 1.0;
         
@@ -124,7 +124,7 @@ class Entity : public BaseEntity {
             VAO.Unbind();
         };
         
-        Entity(Shader ShaderProgram, vector<BaseVector> Vertices = {}, optional<vector<GLuint>> GLuint = std::nullopt) : BaseEntity(ShaderProgram, Vertices, Indices) {
+        Entity(Shader ShaderProgram, vector<BaseVector> Vertices = {}, optional<vector<GLuint>> Indices = std::nullopt) : BaseEntity(ShaderProgram, Vertices, Indices) {
             vector<float> FlatData;
             
             for (auto &Vertex : Vertices) {
@@ -133,7 +133,7 @@ class Entity : public BaseEntity {
             }
             
             VBO.Create(FlatData.data(), FlatData.size() * sizeof(float));
-            if (Indices.has_value()) EBO.Create(Indices.value().data(), Indices.value().size());
+            if (Indices.has_value()) EBO.Create(Indices.value().data(), Indices.value().size() * sizeof(GLuint));
         }
 };
 
