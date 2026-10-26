@@ -41,7 +41,7 @@ class OpenGLWindow {
             glfwWindowHint(GLFW_BLUE_BITS, Mode.blueBits);
             glfwWindowHint(GLFW_REFRESH_RATE, Mode.refreshRate);
             
-            Window = glfwCreateWindow(Size.x, Size.y, "Life Simulation", FullscreenMonitor, nullptr);
+            Window = glfwCreateWindow(Size.x, Size.y, "Logic Simulator", FullscreenMonitor, nullptr);
             if (!Window) {
                 glfwTerminate();
                 throw std::runtime_error("Failed to create the glfw window.");
@@ -115,8 +115,7 @@ class OpenGLWindow {
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 
                 GraphicsEngineReference->Render(GL_TRIANGLES);
-                if (Callback)
-                    Callback(DeltaTime);
+                if (Callback) Callback(DeltaTime);
                 
                 glfwSwapBuffers(Window);
                 glfwPollEvents();

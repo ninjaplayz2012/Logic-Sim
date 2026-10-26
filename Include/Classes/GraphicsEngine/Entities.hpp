@@ -18,8 +18,6 @@ using std::vector, std::optional, std::function;
 #include "C:/glm/glm.hpp"
 #include "Math.hpp"
 
-#ifndef ENTITIES_HPP
-#define ENTITIES_HPP
 class BaseEntity {
     public:
         vector<BaseVector> Vertices{};
@@ -140,5 +138,3 @@ class Entity : public BaseEntity {
 class TextureEntity : public BaseEntity {
     
 };
-
-#endif

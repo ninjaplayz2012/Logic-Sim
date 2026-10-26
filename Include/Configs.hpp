@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 #include <iostream>
+#include <windows.h>
 
 // --[ OpenGL ]--
 #include "C:/glad/glad.h"
@@ -13,6 +14,10 @@
 // --[ Classes ]--
 #include "Classes/GraphicsEngine/GraphicsEngine.hpp"
 #include "Classes/GraphicsEngine/Window.hpp"
+
+#include "Classes/LogicGates/LogicGates.hpp"
+#include "Classes/LogicGates/LogicEvaluater.hpp"
+#include "Classes/LogicGates/BooleanExpressions.hpp"
 
 // --[ Shaders ]--
 #include "DefaultVertexShader.vert.hpp"
