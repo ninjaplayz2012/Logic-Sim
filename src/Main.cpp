@@ -82,18 +82,21 @@ void HandleLogic(vector<string>& Equations) {
     unordered_set<LogicGate*> VisitedGates;
     LogicEvaluator Evaluator;
     
+    using Clock = std::chrono::steady_clock;
+    const auto TotalStart = Clock::now();
+    
     for (auto& Equation : Equations) {
-        vector<string> Terms;
-        string Operator = "";
-        
-        BooleanAlgebraHelpers::FlattenEquation(Equation, Terms, Operator, false);
-        std::cout << Equation + " → " + "{\n"; //Evaluator.SimplifyEquation(Equation) + "\n";
-        for (auto& Term : Terms) std::cout << "\t" + Term + "\n";
-        std::cout << "}\n\n";
+        std::cout << Equation + " → " + Evaluator.SimplifyEquation(Equation) + "\n";
     }
     
-    // BooleanSubCircuit<5, 1> Circuit{ "TestCircuit" };
-    // std::cout << Circuit.GetEquation(VisitedGates);
+    const auto TotalEnd = Clock::now();
+    const double TotalMs = std::chrono::duration<double, std::milli>(TotalEnd - TotalStart).count();
+    const double AverageMs = Equations.empty() ? 0.0 : TotalMs / Equations.size();
+    
+    std::cout << std::fixed << std::setprecision(3);
+    std::cout << "\nEquations: " << Equations.size() << "\n";
+    std::cout << "Total time: " << TotalMs << " ms (" << TotalMs / 1000.0 << " s)\n";
+    std::cout << "Average per equation: " << AverageMs << " ms\n";
 }
 
 /* 

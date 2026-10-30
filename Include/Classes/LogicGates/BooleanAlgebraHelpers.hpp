@@ -13,12 +13,16 @@ using std::regex;
 
 enum class BooleanLaw {
     DoubleNegation,
+    DeMorganFactor,
+    DeMorganExpand,
     DeMorgan,
     Complementation,
     Annihilation,
     Identity,
     Idempotence,
     Absorption,
+    DistributivityFactor,
+    DistributivityExpand,
     Distributivity,
     Associativity,
     Commutativity,
@@ -73,6 +77,8 @@ namespace BooleanAlgebraHelpers {
     }
     
     inline static const string NegationPrefix = "(¬";
+    
+    // 
     static bool FlattenEquation(string& Equation, vector<string>& Terms, string& FlattenOperator, bool Debug) {
         size_t Depth = 0;
         
@@ -85,7 +91,7 @@ namespace BooleanAlgebraHelpers {
                 Left = Equation.substr(1, i - 1); 
                 Right = Equation.substr(i + 3, Equation.size() - 1 - (i + 3)); 
                 Operator = Equation.substr(i, 3); 
-                if (FlattenOperator == "") FlattenOperator = Operator;
+                if (FlattenOperator.empty()) FlattenOperator = Operator;
                 break;
             }
         }
@@ -100,7 +106,8 @@ namespace BooleanAlgebraHelpers {
             std::cout << "Correct Operator: " << (Operator == FlattenOperator ? "True\n\n" : "False\n\n");
         }
         
-        if (Operator != FlattenOperator) {Terms.push_back(Equation); return false;}
+        
+        if (Operator.empty() || Operator != FlattenOperator) {Terms.push_back(Equation); return false;}
         if (IsGroup(Left ) && Left.compare(0, NegationPrefix.size(), NegationPrefix) ) FlattenEquation(Left , Terms, FlattenOperator, Debug); else Terms.push_back(Left );
         if (IsGroup(Right) && Right.compare(0, NegationPrefix.size(), NegationPrefix)) FlattenEquation(Right, Terms, FlattenOperator, Debug); else Terms.push_back(Right);
         
@@ -113,33 +120,45 @@ namespace BooleanAlgebraHelpers {
                 return "DoubleNegation";
                 break;
             case 1:
-                return "DeMorgan";
+                return "DeMorgan Factor";
                 break;
             case 2:
-                return "Complementation";
+                return "DeMorgan Expand";
                 break;
             case 3:
-                return "Annihilation";
+                return "DeMorgan";
                 break;
             case 4:
-                return "Identity";
+                return "Complementation";
                 break;
             case 5:
-                return "Idempotence";
+                return "Annihilation";
                 break;
             case 6:
-                return "Absorption";
+                return "Identity";
                 break;
             case 7:
-                return "Distributivity";
+                return "Idempotence";
                 break;
             case 8:
-                return "Associativity";
+                return "Absorption";
                 break;
             case 9:
-                return "Commutativity";
+                return "Distributivity Factor";
                 break;
             case 10:
+                return "Distributivity Expand";
+                break;
+            case 11:
+                return "Distributivity";
+                break;
+            case 12:
+                return "Associativity";
+                break;
+            case 13:
+                return "Commutativity";
+                break;
+            case 14:
                 return "Parentheses";
                 break;
             default:

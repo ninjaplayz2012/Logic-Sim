@@ -6,75 +6,69 @@
 #include <iterator>
 #include <algorithm>
 #include <windows.h>
+#include <unordered_set>
+#include <fstream>
 
 using std::string;
 using std::vector;
 using std::regex;
+using std::unordered_set;
 
 class LogicEvaluator {
     public:
         inline static bool Debug = false;
-        inline static bool DeepDebug = false;
+        inline static bool DeepDebug = true;
+        inline static bool RecursiveDebug = false;
+        inline static int RecursiveDebugDepth = 3;
         
         static string SimplifyEquation(LogicGate* Gate) { return SimplifyEquation(Gate->GetEquation()); }
         static string SimplifyEquation(string Equation) { SimplifyEquation(&Equation); return Equation; }
         static void SimplifyEquation(string* Equation) {
-            string PreviousEquation;
-            
-            do {
-                PreviousEquation = *Equation;
-                SimplifyOnce(*Equation);
-            } while (*Equation != PreviousEquation);
-            
-            // HandleParentheses(*Equation);
+            unordered_set<string> Seen;
+            while (Seen.insert(*Equation).second) SimplifyOnce(*Equation, Debug);
         }
         
     private:
-        static void SimplifyOnce(string& Equation) {
-            
-            if (Debug) std::cout << "(Pre-DoubleNegation) Equation: " + Equation + "\n";
+        static void SimplifyOnce(string& Equation, bool SimplifyDebug) {
+            if (SimplifyDebug) std::cout << "(Pre-DoubleNegation) Equation: " + Equation + "\n";
             if (Equation.find("(¬(¬") != string::npos) HandleDoubleNegation(Equation, DeepDebug);
-            if (Debug) std::cout << "(Post-DoubleNegation) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Post-DoubleNegation) Equation: " + Equation + "\n";
             
-            if (Debug) std::cout << "(Pre-DeMorgan) Equation: " + Equation + "\n";
-            HandleDeMorgan(Equation, DeepDebug);
-            if (Debug) std::cout << "(Post-DeMorgan) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Pre-DeMorgan) Equation: " + Equation + "\n";
+            if (Equation.find(DeMorganPrefixExpand) != string::npos || Equation.find(DeMorganPrefixFactor) != string::npos) HandleDeMorgan(Equation, DeepDebug);
+            if (SimplifyDebug) std::cout << "(Post-DeMorgan) Equation: " + Equation + "\n";
             
-            if (Debug) std::cout << "(Pre-Complementation) Equation: " + Equation + "\n";
-            if (std::regex_search(Equation, ComplementationRegex1) || std::regex_search(Equation, ComplementationRegex2)) HandleComplementation(Equation, DeepDebug);
-            if (Debug) std::cout << "(Post-Complementation) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Pre-Complementation) Equation: " + Equation + "\n";
+            HandleComplementation(Equation, DeepDebug);
+            if (SimplifyDebug) std::cout << "(Post-Complementation) Equation: " + Equation + "\n";
             
-            if (Debug) std::cout << "(Pre-Annihilation) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Pre-Annihilation) Equation: " + Equation + "\n";
             HandleAnnihilation(Equation, DeepDebug);
-            if (Debug) std::cout << "(Post-Annihilation) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Post-Annihilation) Equation: " + Equation + "\n";
             
-            if (Debug) std::cout << "(Pre-Identity) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Pre-Identity) Equation: " + Equation + "\n";
             HandleIdentity(Equation, DeepDebug);
-            if (Debug) std::cout << "(Post-Identity) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Post-Identity) Equation: " + Equation + "\n";
             
-            if (Debug) std::cout << "(Pre-Identity) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Pre-Idempotence) Equation: " + Equation + "\n";
             HandleIdempotence(Equation, DeepDebug);
-            if (Debug) std::cout << "(Post-Identity) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Post-Idempotence) Equation: " + Equation + "\n";
             
-            if (Debug) std::cout << "(Pre-Absorption) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Pre-Absorption) Equation: " + Equation + "\n";
             HandleAbsorption(Equation, DeepDebug);
-            if (Debug) std::cout << "(Post-Absorption) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Post-Absorption) Equation: " + Equation + "\n";
             
-            if (Debug) std::cout << "(Pre-Distributivity) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Pre-Distributivity) Equation: " + Equation + "\n";
             HandleDistributivity(Equation, DeepDebug);
-            if (Debug) std::cout << "(Post-Distributivity) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Post-Distributivity) Equation: " + Equation + "\n";
             
-            // if (Debug) std::cout << "(Pre-Associativity) Equation: " + Equation + "\n";
-            // HandleAssociativity(Equation, DeepDebug);
-            // if (Debug) std::cout << "(Post-Associativity) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Pre-Associativity) Equation: " + Equation + "\n";
+            HandleAssociativity(Equation, DeepDebug);
+            if (SimplifyDebug) std::cout << "(Post-Associativity) Equation: " + Equation + "\n";
             
-            // if (Debug) std::cout << "(Pre-Commutativity) Equation: " + Equation + "\n";
-            // HandleCommunitvity(Equation, DeepDebug);
-            // if (Debug) std::cout << "(Post-Commutativity) Equation: " + Equation + "\n";
-            
-            if (Debug) std::cout << "(Pre-Parentheses) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Pre-Parentheses) Equation: " + Equation + "\n";
             HandleParentheses(Equation);
-            if (Debug) std::cout << "(Post-Parentheses) Equation: " + Equation + "\n";
+            if (SimplifyDebug) std::cout << "(Post-Parentheses) Equation: " + Equation + "\n";
         }
         
         // --[ Regex ]--
@@ -88,42 +82,57 @@ class LogicEvaluator {
         inline static const regex DeMorganRegex{ R"(^\(¬(.+)\)$)" };
         
         // --( Complementation Regex )--
-        inline static const regex ComplementationRegex1{ R"((\((.+)∨\(¬\2\)\))|(\(\(¬(.+)\)∨\4\)))" };
-        inline static const regex ComplementationRegex2{ R"((\((.+)∧\(¬\2\)\))|(\(\(¬(.+)\)∧\4\)))" };
-        
-        // --( Idempotence Regex )--
-        inline static const regex IdempotenceRegex{ R"(\((.+)(?:∨|∧)\1\))" };
+        inline static const string ComplementationPrefix = "(¬";
         
         // --( Parentheses Regex )--
         inline static const regex ParenthesesRegex1{ R"(\(([^¬∨∧\n]+?)\))" };
         
         // --[ Helper Functions ]--
-        inline static vector<BooleanLaw> Skipping{};
+        inline static unordered_set<BooleanLaw> Skipping{};
+        inline static int Depth = 0;
         
-        static bool TestLaw(string Equation, BooleanLaw SkipLaw) {
-            string PreviousEquation = Equation;
+        static size_t Cost(const string& Equation) {
+            size_t OperatorCount = 0;
+            for (const char* Op : { "∧", "∨", "¬" })
+                for (size_t OperatorIndex = Equation.find(Op); OperatorIndex != string::npos; OperatorIndex = Equation.find(Op, OperatorIndex + 1)) OperatorCount++;
+            return OperatorCount;
+        }
+        static string Reduce(string Equation, BooleanLaw SkipLaw) {
+            unordered_set<string> Seen;
+            Depth++;
+            while (Seen.insert(Equation).second) Equation = ReduceOnce(Equation, SkipLaw);
+            Depth--;
+            return Equation;
+        }
+        static string ReduceOnce(string Equation, BooleanLaw SkipLaw) {
+            const bool Inserted = Skipping.insert(SkipLaw).second;
+            bool DebugReduce = RecursiveDebug && (RecursiveDebugDepth <= Depth);
             
-            Skipping.push_back(SkipLaw);
-            if (DeepDebug) {
-                std::cout << "Testing Laws:\n";
+            // if (DebugReduce) {
+                std::cout << "Reducing:\n";
+                std::cout << "Skip Law: " + BooleanAlgebraHelpers::LawToString(SkipLaw) + "\n";
                 std::cout << "Skipping: {\n";
-                for (BooleanLaw Law : Skipping) { std::cout << "\t" << BooleanAlgebraHelpers::LawToString(Law) << "\n"; }
-                std::cout << "}\n\n";
-            }
+                for (auto& Law : Skipping) std::cout << "\t" + BooleanAlgebraHelpers::LawToString(Law) + "\n";
+                std::cout << "}\n";
+                // std::cout << "Equation: " + Equation;
+            // }
             
-            if (!std::ranges::contains(Skipping, BooleanLaw::DoubleNegation )) HandleDoubleNegation(Equation, false);
-            if (!std::ranges::contains(Skipping, BooleanLaw::DeMorgan       )) HandleDeMorgan(Equation, false);
-            if (!std::ranges::contains(Skipping, BooleanLaw::Complementation)) HandleComplementation(Equation, false);
-            if (!std::ranges::contains(Skipping, BooleanLaw::Annihilation   )) HandleAnnihilation(Equation, false);
-            if (!std::ranges::contains(Skipping, BooleanLaw::Identity       )) HandleIdentity(Equation, false);
-            if (!std::ranges::contains(Skipping, BooleanLaw::Idempotence    )) HandleIdempotence(Equation, false);
-            if (!std::ranges::contains(Skipping, BooleanLaw::Absorption     )) HandleAbsorption(Equation, false);
-            if (!std::ranges::contains(Skipping, BooleanLaw::Distributivity )) HandleDistributivity(Equation, false);
-            // if (std::ranges::contains(Skipping, BooleanLaw::Associativity  )) HandleAssociativity(Equation, false);
-            // if (std::ranges::contains(Skipping, BooleanLaw::Commutativity  )) HandleCommutativity(Equation, false);
+            if (!Skipping.contains(BooleanLaw::DoubleNegation )) HandleDoubleNegation(Equation, DebugReduce);
+            if (!Skipping.contains(BooleanLaw::DeMorgan       )) HandleDeMorgan(Equation, DebugReduce);
+            if (!Skipping.contains(BooleanLaw::Complementation)) HandleComplementation(Equation, DebugReduce);
+            if (!Skipping.contains(BooleanLaw::Annihilation   )) HandleAnnihilation(Equation, DebugReduce);
+            if (!Skipping.contains(BooleanLaw::Identity       )) HandleIdentity(Equation, DebugReduce);
+            if (!Skipping.contains(BooleanLaw::Idempotence    )) HandleIdempotence(Equation, DebugReduce);
+            if (!Skipping.contains(BooleanLaw::Absorption     )) HandleAbsorption(Equation, DebugReduce);
+            if (!Skipping.contains(BooleanLaw::Distributivity )) HandleDistributivity(Equation, DebugReduce);
+            if (!Skipping.contains(BooleanLaw::Associativity  )) HandleAssociativity(Equation, DebugReduce);
             
-            Skipping.pop_back();
-            return Equation != PreviousEquation;
+            if (DebugReduce) std::cout << "Done Reducing: " + Equation + "\n";
+            if (Inserted) Skipping.erase(SkipLaw);
+            return Equation;
+        }
+        static bool TestLaw(string Equation, BooleanLaw SkipLaw) {
+            return Reduce(Equation, SkipLaw) != Equation;
         }
         
         static void HandleDeMorganExpand(string& Equation, bool DebugDeMorgan) {
@@ -147,7 +156,7 @@ class LogicEvaluator {
                 const string Replacement = "((¬" + Left + ")" + FlippedOperator + "(¬" + Right + "))";
                 const string TrialEquation = NewEquation + Replacement + Equation.substr(ClosingParenthesesIndex + 1);
                 
-                if (!TestLaw(TrialEquation, BooleanLaw::DeMorgan)) { NewEquation += Equation[Index]; Index++; continue; }
+                if (Cost(Reduce(TrialEquation, BooleanLaw::DeMorganFactor)) >= Cost(Equation)) { NewEquation += Equation[Index]; Index++; continue; }
                 
                 if (DebugDeMorgan) {
                     std::cout << "Found DeMorgan Expanding: {\n";
@@ -176,7 +185,7 @@ class LogicEvaluator {
                 const size_t ClosingParenthesesIndex = BooleanAlgebraHelpers::FindClosed(Equation, Index);
                 const size_t StartInside = Index + 1;
                 
-                if (ClosingParenthesesIndex == string::npos || TestLaw(Equation, BooleanLaw::DeMorgan)) { NewEquation += Equation[Index]; Index++; continue; }
+                if (ClosingParenthesesIndex == string::npos) { NewEquation += Equation[Index]; Index++; continue; }
                 string Left, Right, Operator;
                 string Inside = Equation.substr(StartInside, ClosingParenthesesIndex - StartInside);
                 
@@ -186,7 +195,9 @@ class LogicEvaluator {
                 
                 const string FlippedOperator = (Operator == "∨" ? "∧" : "∨");
                 const string Replacement = "(¬(" + Left + FlippedOperator + Right + "))";
+                const string Collapsed = NewEquation + Replacement + Equation.substr(ClosingParenthesesIndex + 1);
                 
+                if (Cost(Reduce(Equation, BooleanLaw::DeMorgan)) < Cost(Collapsed)) { NewEquation += Equation[Index]; Index++; continue; }
                 if (DebugDeMorgan) {
                     std::cout << "Found DeMorgan Factoring: {\n";
                     std::cout << "\tIndex: " << Index << "–" << ClosingParenthesesIndex << "\n";
@@ -217,12 +228,61 @@ class LogicEvaluator {
         static bool Distributes(const string& Plain, const string& Group, const string& OuterOperator, string& InnerLeft, string& InnerRight, string& InnerOperator) {
             if (!BooleanAlgebraHelpers::IsGroup(Group)) return false;
             
+            string TempLeft, TempRight, TempOperator;
             string Inside = Group.substr(1, Group.size() - 2);
-            if (!BooleanAlgebraHelpers::SplitTopLevel(Inside, InnerLeft, InnerRight, InnerOperator)) return false;
+            if (!BooleanAlgebraHelpers::SplitTopLevel(Inside, TempLeft, TempRight, TempOperator)) return false;
+            if (OuterOperator == TempOperator) return false;
+            InnerLeft = TempLeft;
+            InnerRight = TempRight;
+            InnerOperator = TempOperator;
             
-            return InnerOperator != OuterOperator;
+            return true;
+        }
+        static bool Complements(const string& TermUno, const string& TermDos, bool& NegatingTerm) {
+            if (TermUno == TermDos) return false;
+            if (TermUno.compare(0, ComplementationPrefix.size(), ComplementationPrefix) == 0 && TermDos.compare(0, ComplementationPrefix.size(), ComplementationPrefix) == 0) return false;
+            NegatingTerm = TermUno.compare(0, ComplementationPrefix.size(), ComplementationPrefix) == 0 ? true : false;
+            return NegatingTerm ? TermUno.substr(ComplementationPrefix.size(), TermUno.size() - 2) == TermDos : TermDos.substr(ComplementationPrefix.size(), TermDos.size() - 2) == TermUno;
+        }
+        static bool HasDistributivityExpand(const string& Equation) {
+            for (size_t Index = 0; Index < Equation.size(); Index++) {
+                if (Equation[Index] != '(') continue;
+                
+                const size_t Close = BooleanAlgebraHelpers::FindClosed(Equation, Index);
+                if (Close == string::npos) continue;
+                
+                string Inside = Equation.substr(Index + 1, Close - Index - 1);
+                string Left, Right, Operator, InnerLeft, InnerRight, InnerOperator;
+                if (!BooleanAlgebraHelpers::SplitTopLevel(Inside, Left, Right, Operator)) continue;
+                
+                if (Distributes(Right, Left, Operator, InnerLeft, InnerRight, InnerOperator)) return true;
+                if (Distributes(Left, Right, Operator, InnerLeft, InnerRight, InnerOperator)) return true;
+            }
+            
+            return false;
+        }
+        static bool HasDistributivityFactor(const string& Equation) {
+            for (size_t Index = 0; Index < Equation.size(); Index++) {
+                if (Equation[Index] != '(') continue;
+                
+                const size_t Close = BooleanAlgebraHelpers::FindClosed(Equation, Index);
+                if (Close == string::npos) continue;
+                
+                string Inside = Equation.substr(Index + 1, Close - Index - 1);
+                string Left, Right, Operator;
+                string LeftLeft, LeftRight, LeftOperator, RightLeft, RightRight, RightOperator;
+                
+                if (!BooleanAlgebraHelpers::SplitTopLevel(Inside, Left, Right, Operator)) continue;
+                if (!Distributes(Right, Left,  Operator, LeftLeft, LeftRight, LeftOperator)) continue;
+                if (!Distributes(Left,  Right, Operator, RightLeft, RightRight, RightOperator)) continue;
+                if (LeftOperator != RightOperator) continue;
+                
+                if (LeftLeft == RightLeft || LeftLeft == RightRight || LeftRight == RightLeft || LeftRight == RightRight) return true;
+            }
+            return false;
         }
         
+        inline static unordered_set<string> ExpansionProducts{};
         static void HandleDistributivityExpand(string& Equation, bool DebugDistributivity) {
             string NewEquation;
             size_t Index = 0;
@@ -240,13 +300,21 @@ class LogicEvaluator {
                 
                 if (!BooleanAlgebraHelpers::SplitTopLevel(Inside, Left, Right, Operator)) { NewEquation += Equation[Index]; Index++; continue; }
                 if (Distributes(Right, Left, Operator, InnerLeft, InnerRight, InnerOperator)) { LeftIsGroup = true ; Done = true; }
-                if (Distributes(Left, Right, Operator, InnerLeft, InnerRight, InnerOperator)) { LeftIsGroup = false; Done = true; }
+                else if (Distributes(Left, Right, Operator, InnerLeft, InnerRight, InnerOperator)) { LeftIsGroup = false; Done = true; }
                 if (!Done) { NewEquation += Equation[Index]; Index++; continue; }
+                if (InnerLeft.empty() || InnerRight.empty() || (InnerOperator != "∧" && InnerOperator != "∨")) { NewEquation += Equation[Index]; Index++; continue; }
+                
+                const string Group = Equation.substr(Index, ClosingParenthesesIndex - Index + 1);
+                if (ExpansionProducts.contains(Group)) { NewEquation += Equation[Index]; Index++; continue; }
                 
                 const string Replacement = "((" + (LeftIsGroup ? Right : Left) + Operator + InnerLeft + ")" + InnerOperator + "(" + (LeftIsGroup ? Right : Left) + Operator + InnerRight + "))";
                 const string TrialEquation = NewEquation + Replacement + Equation.substr(ClosingParenthesesIndex + 1);
                 
-                if (!TestLaw(TrialEquation, BooleanLaw::Distributivity)) { NewEquation += Equation[Index]; Index++; continue; }
+                const bool Inserted = ExpansionProducts.insert(Replacement).second;
+                const size_t TrialCost = Cost(Reduce(TrialEquation, BooleanLaw::DistributivityFactor));
+                if (Inserted) ExpansionProducts.erase(Replacement);
+                if (TrialCost >= Cost(Equation)) { NewEquation += Equation[Index]; Index++; continue; }
+                
                 if (DebugDistributivity) {
                     std::cout << "Found Distributivity Expanding: {\n";
                     std::cout << "\tIndex: " << Index << "–" << ClosingParenthesesIndex << "\n";
@@ -305,6 +373,81 @@ class LogicEvaluator {
             }
             
             Equation = NewEquation;
+        }
+        static void HandleAssociativityEquation(string& Equation, bool DebugAssociativity) {
+            // --( Flattening )--
+            vector<string> Terms;
+            string Operator;
+            BooleanAlgebraHelpers::FlattenEquation(Equation, Terms, Operator, DebugAssociativity);
+            if (Terms.size() <= 2) return;
+            
+            if (DebugAssociativity) {
+                std::cout << "Found Associativity: {\n";
+                std::cout << "\tVersion: " << (Operator == "∧" ? "AND" : "OR") << "\n";
+                std::cout << "\tEquation: " + Equation + "\n";
+                std::cout << "\tTerms: {" << (Terms.size() > 0 ? "\n" : "");
+                for (auto& Term : Terms) std::cout << "\t\t" + Term + "\n";
+                std::cout << "\t}\n";
+                std::cout << "}\n";
+            }
+            
+            // --( Simplifying )--
+            bool AnySimplified = false;
+            
+            while (true) {
+                vector<string> NewTerms;
+                vector<bool> Consumed(Terms.size(), false);
+                bool PassSimplified = false;
+                
+                for (size_t i = 0; i < Terms.size(); i++) {
+                    if (Consumed[i]) continue;
+                    bool Simplified = false;
+                    
+                    for (size_t j = i + 1; j < Terms.size(); j++) {
+                        if (Consumed[j]) continue;
+                        
+                        const string TempEquation = "(" + Terms[i] + Operator + Terms[j] + ")";
+                        const string NewEquation = Reduce(TempEquation, BooleanLaw::Associativity);
+                        
+                        if (NewEquation == TempEquation) continue;
+                        if (Cost(NewEquation) >= Cost(TempEquation)) continue;
+                        
+                        if (DebugAssociativity) {
+                            std::cout << "Simplified: {\n";
+                            std::cout << "\tRemoved Terms: " + Terms[i] + ", " + Terms[j];
+                            std::cout << "\n\tNew Term/Equation: " + TempEquation + " -> " + NewEquation + "\n}\n";
+                        }
+                        
+                        Consumed[i] = Consumed[j] = true;
+                        NewTerms.push_back(NewEquation);
+                        Simplified = PassSimplified = true;
+                        break;
+                    }
+                    
+                    if (!Simplified && DebugAssociativity) std::cout << "Not Simplified: " + Terms[i] + "\n";
+                    if (!Simplified) NewTerms.push_back(Terms[i]);
+                }
+                
+                if (!PassSimplified) break;
+                Terms = NewTerms;
+                AnySimplified = true;
+            }
+            
+            if (DebugAssociativity) {
+                std::cout << "Final Stats:\n";
+                std::cout << "\tEquation: " + Equation + "\n";
+                std::cout << "}\n";
+                std::cout << "Terms: {" << (Terms.size() > 0 ? "\n" : "");
+                for (auto& Term : Terms) std::cout << "\t" + Term + "\n";
+                std::cout << "}\n";
+            }
+            
+            // --( Reconstructing )--
+            if (!AnySimplified) return;
+            if (Terms.size() == 1) { Equation = Terms[0]; return; }
+            
+            Equation = "(" + Terms[0] + Operator + Terms[1] + ")";
+            for (size_t i = 2; i < Terms.size(); i++) Equation = "(" + Equation + Operator + Terms[i] + ")";
         }
         
         // --[ Rule Functions ]--
@@ -366,37 +509,65 @@ class LogicEvaluator {
             if (DebugDeMorgan) {
                 std::cout << "\nDeMorgan Stats:\n";
                 std::cout << "Equation: " << Equation << "\n";
+                std::cout << "Factor?: " << (Equation.find(DeMorganPrefixFactor) != string::npos ? "True\n" : "False\n");
+                std::cout << "Expand?: " << (Equation.find(DeMorganPrefixExpand) != string::npos ? "True\n" : "False\n");
+                std::cout << "Skipping Factor?: " << (Skipping.contains(BooleanLaw::DeMorganFactor) ? "True\n" : "False\n");
+                std::cout << "Skipping Expand?: " << (Skipping.contains(BooleanLaw::DeMorganExpand) ? "True\n" : "False\n");
             }
             
-            HandleDeMorganFactor(Equation, DebugDeMorgan);
-            HandleDeMorganExpand(Equation, DebugDeMorgan);
+            // ((¬(A∧(B∧C)))∧C) -> (((¬A)∧(¬(B∧C))))∧C) -> (((¬A)∧(¬B∧¬C)))∧C)
+            if (Equation.find(DeMorganPrefixFactor) != string::npos && !Skipping.contains(BooleanLaw::DeMorganFactor)) HandleDeMorganFactor(Equation, DebugDeMorgan);
+            if (Equation.find(DeMorganPrefixExpand) != string::npos && !Skipping.contains(BooleanLaw::DeMorganExpand)) HandleDeMorganExpand(Equation, DebugDeMorgan);
             
             if (DebugDeMorgan) std::cout << "New Equation: " << Equation << "\n\n";
         };
         static void HandleComplementation(string& Equation, bool DebugComplementation) {
             if (DebugComplementation) {
                 std::cout << "\nComplementation Stats: \n";
-                
-                size_t Regex1MatchCount = std::distance(std::sregex_iterator(Equation.begin(), Equation.end(), ComplementationRegex1), std::sregex_iterator());
-                size_t Regex2MatchCount = std::distance(std::sregex_iterator(Equation.begin(), Equation.end(), ComplementationRegex2), std::sregex_iterator());
-                size_t TotalMatchCount  = Regex1MatchCount + Regex2MatchCount;
-                
-                std::cout << "Regex 1 Match Count: " << Regex1MatchCount << "\n";
-                std::cout << "Regex 2 Match Count: " << Regex2MatchCount << "\n";
-                std::cout << "Total Match Count: " << TotalMatchCount << "\n";
-                std::cout << "Matched?: " << (TotalMatchCount > 0 ? "True" : "False") << "\n";
                 std::cout << "Equation: " << Equation << "\n";
             }
             
-            Equation = std::regex_replace(Equation, ComplementationRegex1, "1");
-            Equation = std::regex_replace(Equation, ComplementationRegex2, "0");
+            string NewEquation, Left, Right, Operator;
+            size_t Index = 0;
+            bool FoundComplementation = false;
             
-            if (DebugComplementation) std::cout << "New Equation: " << Equation << "\n\n";
+            while (Index < Equation.size()) {
+                if (Equation[Index] != '(') { NewEquation += Equation[Index]; Index++; continue; }
+                size_t ClosedParenthesesIndex = BooleanAlgebraHelpers::FindClosed(Equation, Index);
+                size_t StartInner = Index + 1;
+                string Inner = Equation.substr(StartInner, ClosedParenthesesIndex - StartInner);
+                
+                if (ClosedParenthesesIndex == string::npos || !BooleanAlgebraHelpers::SplitTopLevel(Inner, Left, Right, Operator)) { NewEquation += Equation[Index]; Index++; continue; }
+                bool AndComplementation = Operator == "∧" && (Left == Right);
+                bool OrComplementation  = Operator == "∨" && (Left == Right);
+                bool NegatingTerm;
+                
+                if (!(AndComplementation || OrComplementation) || !Complements(Left, Right, NegatingTerm)) { NewEquation += Equation[Index]; Index++; continue; }
+                if (DebugComplementation) {
+                    std::cout << "Found Complementation: {\n";
+                    std::cout << "\tIndex: " << Index << "–" << ClosedParenthesesIndex << "\n";
+                    std::cout << "\tVersion: " << (AndComplementation ? "AND" : "OR") << "\n";
+                    std::cout << "\tNegating Term: " << (NegatingTerm ? "Left" : "Right") << "\n";
+                    std::cout << "\tEquation: " + Inner + "\n";
+                    std::cout << "}\n";
+                }
+                
+                NewEquation += AndComplementation ? '0' : '1';
+                Index = ClosedParenthesesIndex + 1;
+                FoundComplementation = true;
+            }
+            
+            if (DebugComplementation) {
+                std::cout << "Found Complementation?: " <<(FoundComplementation ? "True" : "False") << "\n";
+                std::cout << "New Equation: " << NewEquation << "\n\n";
+            }
+            
+            Equation = NewEquation;
         }
         static void HandleAnnihilation(string& Equation, bool DebugAnnihilation) {
             string NewEquation, Left, Right, Operator;
             size_t Index = 0;
-            bool FoundAnnihlation = false;
+            bool FoundAnnihilation = false;
             
             if (DebugAnnihilation) {
                 std::cout << "\nAnnihilation Stats: \n";
@@ -425,11 +596,11 @@ class LogicEvaluator {
                 
                 NewEquation += AndAnnihlation ? '0' : '1';
                 Index = ClosedParenthesesIndex + 1;
-                FoundAnnihlation = true;
+                FoundAnnihilation = true;
             }
             
             if (DebugAnnihilation) {
-                std::cout << "Found Annihlation?: " <<(FoundAnnihlation ? "True" : "False") << "\n";
+                std::cout << "Found Annihilation?: " <<(FoundAnnihilation ? "True" : "False") << "\n";
                 std::cout << "New Equation: " << NewEquation << "\n\n";
             }
             
@@ -466,7 +637,7 @@ class LogicEvaluator {
                     std::cout << "}\n";
                 }
                 
-                NewEquation += ((Left == "1" || Left == "0") ? Right : Left);
+                NewEquation += ((AndIdentity ? Left == "1" : Left == "0") ? Right : Left);
                 Index = ClosedParenthesesIndex + 1;
                 FoundIdentity = true;
             }
@@ -481,14 +652,45 @@ class LogicEvaluator {
         static void HandleIdempotence(string& Equation, bool DebugIdempotence) {
             if (DebugIdempotence) {
                 std::cout << "\nIdempotence Stats: \n";
-                std::cout << "Match Count: " << std::distance(std::sregex_iterator(Equation.begin(), Equation.end(), IdempotenceRegex), std::sregex_iterator()) << "\n";
-                std::cout << "Matched?: " << (std::regex_search(Equation, IdempotenceRegex) ? "True" : "False") << "\n";
                 std::cout << "Equation: " << Equation << "\n";
             }
             
-            Equation = std::regex_replace(Equation, IdempotenceRegex, "$1");
+            string NewEquation, Left, Right, Operator;
+            size_t Index = 0;
+            bool FoundIdempotence = false;
             
-            if (DebugIdempotence) std::cout << "New Equation: " << Equation << "\n\n";
+            while (Index < Equation.size()) {
+                if (Equation[Index] != '(') { NewEquation += Equation[Index]; Index++; continue; }
+                size_t ClosedParenthesesIndex = BooleanAlgebraHelpers::FindClosed(Equation, Index);
+                size_t StartInner = Index + 1;
+                string Inner = Equation.substr(StartInner, ClosedParenthesesIndex - StartInner);
+                
+                if (ClosedParenthesesIndex == string::npos || !BooleanAlgebraHelpers::SplitTopLevel(Inner, Left, Right, Operator)) { NewEquation += Equation[Index]; Index++; continue; }
+                bool AndIdempotence = Operator == "∧" && (Left == Right);
+                bool OrIdempotence  = Operator == "∨" && (Left == Right);
+                bool TermsEqual = Left == Right;
+                
+                if (!(AndIdempotence || OrIdempotence) || !TermsEqual) { NewEquation += Equation[Index]; Index++; continue; }
+                if (DebugIdempotence) {
+                    std::cout << "Found Idempotence: {\n";
+                    std::cout << "\tIndex: " << Index << "–" << ClosedParenthesesIndex << "\n";
+                    std::cout << "\tVersion: " << (AndIdempotence ? "AND" : "OR") << "\n";
+                    std::cout << "\tTerm: " << Left << "\n";
+                    std::cout << "\tEquation: " + Inner + "\n";
+                    std::cout << "}\n";
+                }
+                
+                NewEquation += Left;
+                Index = ClosedParenthesesIndex + 1;
+                FoundIdempotence = true;
+            }
+            
+            if (DebugIdempotence) {
+                std::cout << "Found Idempotence?: " <<(FoundIdempotence ? "True" : "False") << "\n";
+                std::cout << "New Equation: " << NewEquation << "\n\n";
+            }
+            
+            Equation = NewEquation;
         }
         static void HandleAbsorption(string& Equation, bool DebugAbsorption) {
             // A ∧ (A ∨ B) -> A or A ∨ (A ∧ B) -> A
@@ -544,17 +746,47 @@ class LogicEvaluator {
                 std::cout << "Equation: " << Equation << "\n";
             }
             
-            HandleDistributivityFactor(Equation, DebugDistributivity);
-            HandleDistributivityExpand(Equation, DebugDistributivity);
+            if (HasDistributivityFactor(Equation) && !Skipping.contains(BooleanLaw::DistributivityFactor)) HandleDistributivityFactor(Equation, DebugDistributivity);
+            if (HasDistributivityExpand(Equation) && !Skipping.contains(BooleanLaw::DistributivityExpand)) HandleDistributivityExpand(Equation, DebugDistributivity);
             
             if (DebugDistributivity) std::cout << "New Equation: " << Equation << "\n\n";
         };
-        
         static void HandleAssociativity(string& Equation, bool DebugAssociativity) {
+            if (Skipping.contains(BooleanLaw::Associativity)) return;
+            string NewEquation, Left, Right, Operator;
+            bool FoundAssociativity = false;
+            size_t Index = 0;
             
+            if (DebugAssociativity) {
+                std::cout << "\nAssociativity Stats: \n";
+                std::cout << "Equation: " << Equation << "\n";
+                std::cout << "Processing Absorption:\n";
+            }
+            
+            while (Index < Equation.size()) {
+                if (Equation[Index] != '(') { NewEquation += Equation[Index]; Index++; continue; }
+                
+                const size_t Close = BooleanAlgebraHelpers::FindClosed(Equation, Index);
+                if (Close == string::npos) { NewEquation += Equation[Index]; Index++; continue; }
+                
+                const string Group = Equation.substr(Index, Close - Index + 1);
+                string Processed = Group;
+                HandleAssociativityEquation(Processed, DebugAssociativity);
+                
+                if (Processed == Group) { NewEquation += Equation[Index]; Index++; continue; }
+                
+                FoundAssociativity = true;
+                NewEquation += Processed;
+                Index = Close + 1;
+            }
+            
+            if (DebugAssociativity) {
+                std::cout << "Found Associativity?: " << (FoundAssociativity ? "True" : "False") << "\n";
+                std::cout << "New Equation: " << NewEquation << "\n\n";
+            }
+            
+            Equation = NewEquation;
         }
-        
-        static void HandleCommutativity(string& Equation, bool DebugCommutativity);
         static void HandleParentheses(string& Equation) {
             Equation = std::regex_replace(Equation, ParenthesesRegex1, "$1");
         }
