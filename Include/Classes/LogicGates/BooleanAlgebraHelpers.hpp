@@ -78,7 +78,6 @@ namespace BooleanAlgebraHelpers {
     
     inline static const string NegationPrefix = "(¬";
     
-    // 
     static bool FlattenEquation(string& Equation, vector<string>& Terms, string& FlattenOperator, bool Debug) {
         size_t Depth = 0;
         
@@ -92,7 +91,6 @@ namespace BooleanAlgebraHelpers {
                 Right = Equation.substr(i + 3, Equation.size() - 1 - (i + 3)); 
                 Operator = Equation.substr(i, 3); 
                 if (FlattenOperator.empty()) FlattenOperator = Operator;
-                break;
             }
         }
         
@@ -118,49 +116,34 @@ namespace BooleanAlgebraHelpers {
         switch ((int)Law) {
             case 0:
                 return "DoubleNegation";
-                break;
             case 1:
                 return "DeMorgan Factor";
-                break;
             case 2:
                 return "DeMorgan Expand";
-                break;
             case 3:
                 return "DeMorgan";
-                break;
             case 4:
                 return "Complementation";
-                break;
             case 5:
                 return "Annihilation";
-                break;
             case 6:
                 return "Identity";
-                break;
             case 7:
                 return "Idempotence";
-                break;
             case 8:
                 return "Absorption";
-                break;
             case 9:
                 return "Distributivity Factor";
-                break;
             case 10:
                 return "Distributivity Expand";
-                break;
             case 11:
                 return "Distributivity";
-                break;
             case 12:
                 return "Associativity";
-                break;
             case 13:
                 return "Commutativity";
-                break;
             case 14:
                 return "Parentheses";
-                break;
             default:
                 return "None";
         }

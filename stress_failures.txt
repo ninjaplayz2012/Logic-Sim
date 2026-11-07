@@ -1,29 +1,65 @@
+CRASH  terms=7
+IN : (B∧((¬(0∨C))∨(((¬B)∨A)∨(A∧A))))
+OUT: 
+
 CRASH  terms=5
-IN : (¬((B∧(C∨(¬0)))∨(0∨A)))
+IN : ((((¬1)∨(¬0))∧B)∨((¬B)∨A))
+OUT: 
+
+CRASH  terms=6
+IN : (((¬A)∧(A∨((¬1)∧(¬((¬B)∧A)))))∧(¬C))
 OUT: 
 
 CRASH  terms=7
 IN : ((¬(C∧B))∨((((¬A)∨B)∧(C∧B))∧A))
 OUT: 
 
-CRASH  terms=8
-IN : ((((¬(A∨A))∧((¬C)∧(¬A)))∨(B∧B))∨(A∧A))
+CRASH  terms=5
+IN : (¬((B∧(C∨(¬0)))∨(0∨A)))
 OUT: 
 
 CRASH  terms=6
-IN : ((¬(((B∧(C∧A))∨C)∨B))∨C)
-OUT: 
-
-CRASH  terms=8
-IN : (A∧(¬((A∧(¬A))∧((A∧0)∨(B∧(¬((¬C)∨B)))))))
+IN : (((A∧((B∨B)∧A))∨B)∧C)
 OUT: 
 
 CRASH  terms=6
 IN : (¬((A∨(C∧(¬((¬B)∨A))))∨(C∧(¬C))))
 OUT: 
 
+CRASH  terms=6
+IN : ((((¬A)∨C)∧A)∨((¬(1∧0))∧(¬A)))
+OUT: 
+
+CRASH  terms=5
+IN : ((¬((C∧A)∨(B∨C)))∨B)
+OUT: 
+
+CRASH  terms=8
+IN : ((¬(C∨(¬C)))∨((¬C)∧((¬C)∧(((A∧(¬C))∨A)∧C))))
+OUT: 
+
 CRASH  terms=7
-IN : (¬(((¬(C∨B))∧((C∧A)∨((¬C)∨(¬C))))∨(¬A)))
+IN : (((B∨C)∧A)∧((C∧A)∨((¬C)∧B)))
+OUT: 
+
+CRASH  terms=7
+IN : ((A∧(B∨(1∧(¬B))))∧(¬((A∨(¬B))∨(¬B))))
+OUT: 
+
+CRASH  terms=6
+IN : ((¬(((B∧(C∧A))∨C)∨B))∨C)
+OUT: 
+
+CRASH  terms=6
+IN : ((B∨C)∧((A∨C)∨(A∨(¬B))))
+OUT: 
+
+CRASH  terms=8
+IN : ((((¬(A∨A))∧((¬C)∧(¬A)))∨(B∧B))∨(A∧A))
+OUT: 
+
+CRASH  terms=5
+IN : ((A∨C)∧((A∨B)∧(¬B)))
 OUT: 
 
 CRASH  terms=8
@@ -31,55 +67,111 @@ IN : ((¬((((B∧B)∨A)∧(¬B))∧B))∨((¬C)∧(C∧C)))
 OUT: 
 
 CRASH  terms=8
-IN : (A∨(¬((((B∧A)∨(B∨B))∨(C∨A))∧B)))
+IN : (¬(((((C∨B)∧(¬B))∨(¬A))∨(¬((B∨(¬A))∨(¬C))))∧(¬B)))
 OUT: 
 
-CRASH  terms=8
-IN : ((¬((B∧A)∧((¬A)∧C)))∨((¬A)∨((¬B)∧(¬((¬A)∨(¬A))))))
+CRASH  terms=5
+IN : ((¬((¬0)∨0))∨((A∧C)∧A))
 OUT: 
 
-CRASH  terms=8
-IN : (¬(((C∨B)∨1)∧(¬((¬((B∧(C∨C))∧A))∨C))))
+CRASH  terms=5
+IN : (¬((C∨(¬B))∧(B∧(A∨A))))
 OUT: 
 
 CRASH  terms=6
-IN : ((¬C)∧((¬A)∨(((B∨(¬B))∧(¬A))∧C)))
+IN : (C∧((C∧(A∨(¬(B∧C))))∧(¬A)))
+OUT: 
+
+CRASH  terms=6
+IN : ((C∧(B∨((¬1)∧A)))∨(A∨A))
 OUT: 
 
 CRASH  terms=8
-IN : (¬(((((C∨B)∧(¬B))∨(¬A))∨(¬((B∨(¬A))∨(¬C))))∧(¬B)))
+IN : ((((A∨C)∨(¬1))∨(C∧((¬0)∧B)))∧(A∨B))
+OUT: 
+
+CRASH  terms=8
+IN : (B∧((((¬(A∧B))∧A)∨B)∧(B∧(A∨A))))
+OUT: 
+
+CRASH  terms=4
+IN : (((¬C)∨(¬B))∧(¬((¬C)∧A)))
+OUT: 
+
+CRASH  terms=6
+IN : (((¬B)∨((¬0)∨(¬A)))∨((C∧C)∧B))
+OUT: 
+
+CRASH  terms=6
+IN : (¬(((((A∨A)∨C)∧C)∨(¬A))∧(¬B)))
 OUT: 
 
 CRASH  terms=4
 IN : (¬((C∨B)∨(¬((¬A)∨(¬C)))))
 OUT: 
 
-CRASH  terms=4
-IN : ((¬(B∨(A∧C)))∨(¬C))
-OUT: 
-
 CRASH  terms=7
-IN : ((¬(((A∧(¬C))∨(¬B))∨(A∧(¬B))))∨((¬B)∨A))
-OUT: 
-
-CRASH  terms=8
-IN : (¬((C∧B)∧(C∨(¬((B∧1)∨(0∧(A∨B)))))))
+IN : ((((B∨C)∧B)∧(¬C))∨(¬((C∨(¬B))∧B)))
 OUT: 
 
 CRASH  terms=7
 IN : (((¬C)∨(¬((¬B)∧(¬((¬B)∨(((¬C)∨A)∨C))))))∧A)
 OUT: 
 
+CRASH  terms=8
+IN : ((A∨A)∧(((¬B)∨((C∧C)∨B))∧((¬C)∨C)))
+OUT: 
+
+CRASH  terms=6
+IN : (((A∧C)∨B)∨(A∧(B∨(¬C))))
+OUT: 
+
 CRASH  terms=7
-IN : ((((B∨C)∧B)∧(¬C))∨(¬((C∨(¬B))∧B)))
+IN : ((¬(((A∧(¬C))∨(¬B))∨(A∧(¬B))))∨((¬B)∨A))
+OUT: 
+
+CRASH  terms=4
+IN : ((¬(B∨(A∧C)))∨(¬C))
 OUT: 
 
 CRASH  terms=8
 IN : (((C∨(¬B))∨(B∧A))∨((¬B)∨(¬((A∨(¬A))∧C))))
 OUT: 
 
+CRASH  terms=8
+IN : (¬((C∧B)∧(C∨(¬((B∧1)∨(0∧(A∨B)))))))
+OUT: 
+
+CRASH  terms=6
+IN : (((1∧B)∧C)∨((A∨(¬C))∧(¬1)))
+OUT: 
+
+CRASH  terms=7
+IN : ((B∨C)∧(¬((C∨(¬B))∨(¬(B∧(C∨B))))))
+OUT: 
+
+CRASH  terms=4
+IN : (¬(((A∨(¬C))∨(¬B))∧B))
+OUT: 
+
+CRASH  terms=7
+IN : ((¬((¬(C∨((¬B)∧A)))∨(C∨C)))∨(B∧(¬B)))
+OUT: 
+
+CRASH  terms=8
+IN : (¬((¬((¬C)∧(¬C)))∨((¬((A∧(¬C))∨((A∧C)∧C)))∧B)))
+OUT: 
+
+CRASH  terms=5
+IN : (((¬B)∧C)∨((C∧B)∧(¬C)))
+OUT: 
+
 CRASH  terms=7
 IN : (((¬(C∧C))∨(C∧A))∧(((¬B)∨(¬C))∨(¬C)))
+OUT: 
+
+CRASH  terms=8
+IN : ((B∨((¬((B∧B)∧0))∧C))∨((¬C)∨(C∧(¬1))))
 OUT: 
 
 CRASH  terms=7
@@ -87,15 +179,23 @@ IN : (¬((((C∨B)∧((A∧A)∧(¬B)))∧B)∨C))
 OUT: 
 
 CRASH  terms=7
-IN : ((((¬B)∧A)∧((¬(((¬A)∨(¬A))∨B))∨(¬0)))∧(¬A))
-OUT: 
-
-CRASH  terms=8
-IN : (((C∧(((¬A)∨(¬A))∧((¬C)∧B)))∧B)∧(¬(C∧(¬C))))
+IN : ((A∧(C∨(B∨(¬A))))∨(B∧(1∧B)))
 OUT: 
 
 CRASH  terms=7
-IN : ((((¬B)∨B)∧((¬(A∨A))∨A))∨(¬(C∧A)))
+IN : ((A∧(¬((A∨(¬B))∧(0∨(¬C)))))∧(B∧B))
+OUT: 
+
+CRASH  terms=7
+IN : (¬(((¬(C∨B))∧((C∧A)∨((¬C)∨(¬C))))∨(¬A)))
+OUT: 
+
+CRASH  terms=8
+IN : ((((¬((A∧(¬B))∨(¬C)))∧(¬C))∨(¬A))∧(((¬A)∧1)∨B))
+OUT: 
+
+CRASH  terms=4
+IN : (B∨(¬(B∧(A∨C))))
 OUT: 
 
 CRASH  terms=8
@@ -103,19 +203,15 @@ IN : ((¬((¬C)∧A))∨(¬((B∧A)∧(C∨((¬C)∨(A∨1))))))
 OUT: 
 
 CRASH  terms=5
-IN : (¬(((C∧(¬C))∧B)∧(¬((¬C)∧B))))
+IN : (C∨(¬((¬(C∧(¬A)))∧((¬C)∧B))))
+OUT: 
+
+CRASH  terms=7
+IN : ((((¬B)∧A)∧((¬(((¬A)∨(¬A))∨B))∨(¬0)))∧(¬A))
 OUT: 
 
 CRASH  terms=5
-IN : ((¬C)∨(¬(A∧(B∧(B∨A)))))
-OUT: 
-
-CRASH  terms=7
-IN : (¬(((1∧B)∨(((C∧A)∨B)∧A))∧B))
-OUT: 
-
-CRASH  terms=7
-IN : ((0∧B)∨(¬(((¬A)∨A)∧((A∧(¬C))∧B))))
+IN : (((C∨B)∧(A∨B))∧A)
 OUT: 
 
 CRASH  terms=8
@@ -123,39 +219,71 @@ IN : (¬(((((C∧(¬C))∧A)∧(¬(A∧(¬B))))∨(¬C))∧(A∧(¬B))))
 OUT: 
 
 CRASH  terms=6
-IN : (((A∨(¬A))∨(¬C))∨((¬A)∧(B∨(¬B))))
+IN : (¬((¬(((C∨C)∨C)∨B))∨(A∧B)))
 OUT: 
 
-CRASH  terms=4
-IN : (B∨(¬(B∧(A∨C))))
-OUT: 
-
-CRASH  terms=6
-IN : (((¬B)∨C)∧(¬(((C∧0)∨C)∨B)))
+CRASH  terms=8
+IN : ((C∧B)∨((A∨((¬1)∧C))∧((B∨C)∧(¬C))))
 OUT: 
 
 CRASH  terms=5
-IN : (¬((A∨(B∧C))∧(A∧A)))
-OUT: 
-
-CRASH  terms=4
-IN : (¬(C∧(B∧(B∧B))))
-OUT: 
-
-CRASH  terms=6
-IN : ((1∧(B∧(((¬A)∨(¬C))∨(¬B))))∧C)
+IN : (¬((¬(C∧(B∧(A∨C))))∧A))
 OUT: 
 
 CRASH  terms=8
 IN : (C∧(¬(1∧(((A∧(B∨A))∧A)∨((¬B)∧C)))))
 OUT: 
 
+CRASH  terms=6
+IN : (((¬B)∨C)∧(¬(((C∧0)∨C)∨B)))
+OUT: 
+
 CRASH  terms=8
-IN : (((A∨B)∨(¬(((¬B)∨A)∧A)))∧((¬(C∨A))∧B))
+IN : ((C∨((¬(C∨A))∧((A∨(¬A))∧(¬B))))∧((¬C)∨A))
+OUT: 
+
+CRASH  terms=7
+IN : (((¬(C∧(¬A)))∨(A∨(¬((¬A)∨C))))∧(C∨B))
+OUT: 
+
+CRASH  terms=6
+IN : (¬((¬((B∨(¬C))∨A))∨(B∧(¬(C∧C)))))
 OUT: 
 
 CRASH  terms=5
-IN : ((¬((C∧A)∨(B∨C)))∨B)
+IN : (¬(((¬B)∧(B∧(¬C)))∨(C∧(¬B))))
+OUT: 
+
+CRASH  terms=5
+IN : (B∧(A∧(¬((¬C)∨(¬((¬A)∨B))))))
+OUT: 
+
+CRASH  terms=8
+IN : (((C∨(B∧A))∨0)∧(A∨(C∧(¬((¬B)∨A)))))
+OUT: 
+
+CRASH  terms=8
+IN : (((((¬(B∨(¬0)))∨A)∧C)∨A)∧(((¬C)∨B)∨(¬C)))
+OUT: 
+
+CRASH  terms=6
+IN : (((C∧(A∨(A∨A)))∨B)∨A)
+OUT: 
+
+CRASH  terms=8
+IN : (((B∨(¬(C∨(¬(C∧B)))))∧((A∨(¬C))∧C))∨B)
+OUT: 
+
+CRASH  terms=8
+IN : (((¬(C∧(¬(B∨(A∨(¬B))))))∧C)∧(((¬C)∧(¬C))∧C))
+OUT: 
+
+CRASH  terms=6
+IN : ((¬1)∨(((¬C)∧((¬B)∧A))∨(¬(C∧(¬C)))))
+OUT: 
+
+CRASH  terms=8
+IN : ((¬((((C∨C)∨((¬((¬B)∧(¬C)))∨(¬C)))∧(¬1))∧C))∨(¬A))
 OUT: 
 
 CRASH  terms=8
@@ -167,19 +295,27 @@ IN : (¬(((¬(A∧((¬A)∨1)))∧(B∧A))∨((1∧1)∧C)))
 OUT: 
 
 CRASH  terms=5
-IN : (¬((C∨(¬B))∧(B∧(A∨A))))
+IN : (((¬C)∧B)∨(A∧(¬((¬A)∧(¬B)))))
 OUT: 
 
-CRASH  terms=8
-IN : ((¬(B∧((C∧B)∨(C∧(C∧B)))))∨(C∧1))
+TIMEOUT  terms=5
+IN : ((A∨(¬C))∨((A∧B)∧B))
 OUT: 
 
 CRASH  terms=5
 IN : (((¬(B∨C))∧((¬A)∧B))∨(¬C))
 OUT: 
 
-CRASH  terms=5
-IN : ((C∨B)∨(¬(A∨(C∨B))))
+TIMEOUT  terms=6
+IN : ((¬(B∨A))∨(((¬B)∨A)∧(B∧A)))
+OUT: 
+
+CRASH  terms=7
+IN : (((A∧B)∨(C∧A))∧(A∧(A∧B)))
+OUT: 
+
+CRASH  terms=7
+IN : ((((A∧A)∧A)∨C)∧(B∨((¬A)∧(¬C))))
 OUT: 
 
 CRASH  terms=7
@@ -187,50 +323,50 @@ IN : (((¬((B∨A)∧((¬(B∨B))∧C)))∨B)∧A)
 OUT: 
 
 CRASH  terms=6
-IN : (((¬B)∧((¬A)∧A))∧(((¬A)∨B)∨C))
-OUT: 
-
-CRASH  terms=5
-IN : (((¬((C∧B)∧B))∨A)∨B)
-OUT: 
-
-CRASH  terms=6
 IN : (¬(C∧(((A∨C)∧A)∨((¬B)∧C))))
 OUT: 
 
-CRASH  terms=7
-IN : (¬(((((A∧(¬B))∧A)∨(A∨(¬A)))∨A)∧0))
+CRASH  terms=6
+IN : ((B∨(0∨(¬C)))∨((¬((¬A)∨0))∧(¬0)))
+OUT: 
+
+TIMEOUT  terms=5
+IN : ((C∧B)∧((¬(B∧A))∨B))
 OUT: 
 
 CRASH  terms=8
 IN : (¬(((¬C)∨(((¬B)∨(A∧B))∨B))∧(¬(A∧((¬1)∨B)))))
 OUT: 
 
-CRASH  terms=8
-IN : ((C∨((¬(C∨A))∧((A∨(¬A))∧(¬B))))∧((¬C)∨A))
-OUT: 
-
-CRASH  terms=7
-IN : ((((¬(A∨B))∨(B∧C))∨(B∧C))∧(¬C))
-OUT: 
-
-TIMEOUT  terms=6
-IN : (((¬A)∧(A∨((¬1)∧(¬((¬B)∧A)))))∧(¬C))
+TIMEOUT  terms=5
+IN : ((C∨B)∨(¬(A∨(C∨B))))
 OUT: 
 
 TIMEOUT  terms=8
-IN : (B∧((((¬(A∧B))∧A)∨B)∧(B∧(A∨A))))
+IN : ((¬B)∧(((C∧(¬C))∨((C∨A)∧((¬A)∧B)))∨A))
+OUT: 
+
+TIMEOUT  terms=8
+IN : (((C∨(A∨A))∨((C∧A)∧((¬B)∨C)))∧B)
+OUT: 
+
+TIMEOUT  terms=5
+IN : (((C∧B)∧A)∨(C∨B))
 OUT: 
 
 TIMEOUT  terms=7
-IN : ((C∨(¬C))∨((¬1)∨(¬((B∨C)∧(1∧0)))))
+IN : ((((¬(A∨B))∨(B∧C))∨(B∧C))∧(¬C))
+OUT: 
+
+TIMEOUT  terms=8
+IN : (((A∨B)∨(¬(((¬B)∨A)∧A)))∧((¬(C∨A))∧B))
 OUT: 
 
 TIMEOUT  terms=7
-IN : ((¬((((B∧0)∧((¬A)∧(¬B)))∨B)∨B))∧C)
+IN : ((((C∨C)∧A)∨(B∧(¬0)))∧((¬B)∨A))
 OUT: 
 
-TIMEOUT  terms=7
-IN : (¬((B∨C)∧(((A∨1)∨(A∨A))∧C)))
+TIMEOUT  terms=8
+IN : ((((¬((¬A)∧(¬(((¬B)∨C)∨A))))∧C)∧B)∨(C∨B))
 OUT: 
 
