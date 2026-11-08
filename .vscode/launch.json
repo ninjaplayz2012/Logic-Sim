@@ -1,0 +1,16 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/LogicSim.exe",
+            "args": ["-l", "(((¬((¬(F∧(¬E)))∧((H∨J)∧0)))∨((¬((C∧(¬H))∧((G∨((E∨I)∧A))∨(J∧B))))∧I))∨(D∧(¬(A∨((¬D)∨E)))))"],
+            "cwd": "${workspaceRoot}"
+        }
+    ]
+}

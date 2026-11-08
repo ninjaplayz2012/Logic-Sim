@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import argparse, os, random, subprocess, sys, time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -83,7 +82,7 @@ def count_ops(s): return s.count("∧") + s.count("∨") + s.count("¬")
 # ---------- running ----------
 def run_batch(exe, eqs, timeout):
     try:
-        p = subprocess.run([exe, *eqs], capture_output=True, text=True,
+        p = subprocess.run([exe, "--logic", *eqs], capture_output=True, text=True,
                            encoding="utf-8", errors="replace", timeout=timeout)
     except subprocess.TimeoutExpired:
         return None

@@ -6,23 +6,33 @@ const glm::ivec2 WindowSize{400, 400};
 void HandleGraphics();
 void HandleLogic(vector<string>& Equations);
 
+// Main
 int wmain(int ArgumentCount, wchar_t** Arguments) {
     SetConsoleOutputCP(CP_UTF8);
     
     vector<string> Equations;
+    
+    bool DoGraphics = false;
+    bool DoLogic = false;
+    
     for (int i = 1; i < ArgumentCount; i++) {
         int Length = WideCharToMultiByte(CP_UTF8, 0, Arguments[i], -1, nullptr, 0, nullptr, nullptr);
         if (Length <= 0) continue;
         
-        string Equation(Length, '\0');
+        string Equation(Length - 1, '\0');
         WideCharToMultiByte(CP_UTF8, 0, Arguments[i], -1, Equation.data(), Length, nullptr, nullptr);
         
-        Equation.pop_back();
-        Equations.push_back(Equation);
+        if (Equation == "--debug" || Equation == "-d") LogicEvaluator::Debug = true;
+        else if (Equation == "--logic" || Equation == "-l") DoLogic = true;
+        else if (Equation == "--graphics" || Equation == "-g") DoGraphics = true;
+        else if (Equation == "--deepdebug" || Equation == "-dd") LogicEvaluator::DeepDebug = true;
+        else if (Equation == "--recursivedebug" || Equation == "-rd") LogicEvaluator::RecursiveDebug = true;
+        else if (Equation.find("--depth=", 0) == 0) LogicEvaluator::RecursiveDebugDepth = std::stoi(Equation.substr(8));
+        else Equations.push_back(Equation);
     }
     
-    HandleLogic(Equations);
-    // HandleGraphics();
+    if (DoLogic) HandleLogic(Equations);
+    if (DoGraphics) HandleGraphics();
     
     return 0;
 }
@@ -80,13 +90,12 @@ void HandleGraphics() {
 
 void HandleLogic(vector<string>& Equations) {
     unordered_set<LogicGate*> VisitedGates;
-    LogicEvaluator Evaluator;
     
     using Clock = std::chrono::steady_clock;
     const auto TotalStart = Clock::now();
     
     for (auto& Equation : Equations) {
-        std::cout << Equation + " → " + Evaluator.SimplifyEquation(Equation) + "\n";
+        std::cout << Equation + " → " + LogicEvaluator::SimplifyEquation(Equation) + "\n";
     }
     
     const auto TotalEnd = Clock::now();

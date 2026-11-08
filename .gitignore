@@ -63,7 +63,10 @@ vcpkg_installed/
 
 # debug information files
 *.dwo
+Log.txt
+stress_failures.txt
 
 # test output & cache
 Testing/
 .cache/
+.vscode/

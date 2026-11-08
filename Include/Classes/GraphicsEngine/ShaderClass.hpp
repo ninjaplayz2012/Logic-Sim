@@ -8,7 +8,6 @@
 #include <sstream>
 #include <functional>
 #include <stdexcept>
-#include <any>
 
 using std::string;
 using std::vector;
