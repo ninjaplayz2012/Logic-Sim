@@ -95,7 +95,10 @@ void HandleLogic(vector<string>& Equations) {
     const auto TotalStart = Clock::now();
     
     for (auto& Equation : Equations) {
-        std::cout << Equation + " → " + LogicEvaluator::SimplifyEquation(Equation) + "\n";
+        std::cout << "Parsing Equation: " + Equation + "\n";
+        ParseEquation(Equation)->print();
+        std::cout << "\n";
+        // std::cout << Equation + " → " + LogicEvaluator::SimplifyEquation(Equation) + "\n\n";
     }
     
     const auto TotalEnd = Clock::now();
