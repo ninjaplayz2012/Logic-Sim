@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Classes/LogicGates/LogicGates.hpp"
 #include <iostream>
 #include <string>

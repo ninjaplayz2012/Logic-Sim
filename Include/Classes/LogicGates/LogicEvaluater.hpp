@@ -1,7 +1,7 @@
 #pragma once
 #include "Classes/LogicGates/LogicGates.hpp"
 #include "Classes/LogicGates/BooleanAlgebraHelpers.hpp"
-#include "Classes/LogicGates/BooleanAlgebraAST.hpp"
+#include "Classes/LogicGates/AST/BooleanAlgebraAST.hpp"
 #include <vector>
 #include <string>
 #include <stdexcept>
