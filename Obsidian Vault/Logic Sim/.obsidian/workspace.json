@@ -20,23 +20,8 @@
               "icon": "lucide-file",
               "title": "Documentation"
             }
-          },
-          {
-            "id": "65219003ae56714d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Logic Simulation.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Logic Simulation"
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -98,7 +83,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "2a97156c2cf9bad9",
@@ -114,7 +100,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Logic Simulation.md",
+                "file": "Documentation.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -204,10 +190,10 @@
       "publish:Publish changes...": false
     }
   },
-  "active": "65219003ae56714d",
+  "active": "fea60a8797b912ef",
   "lastOpenFiles": [
-    "Documentation.md",
     "Logic Simulation.md",
+    "Documentation.md",
     "Untitled.base",
     "Untitled 1.base"
   ]

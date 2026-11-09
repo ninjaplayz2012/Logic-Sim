@@ -1,7 +1,12 @@
 #pragma once
 #include <iostream>
 #include <stdexcept>
+#include <vector>
+
 #include "Classes/LogicGates/AST/BooleanAlgebraAST.hpp"
+#include "Classes/LogicGates/BooleanAlgebra/LogicEvaluator.hpp"
+
+using std::vector;
 
 namespace BooleanAlgebraASTTools {
     static bool IsValidNodeType(BooleanAlgebraNodeType Type) { return (int)Type >= 0 && (int)Type <= 8; }
@@ -64,24 +69,38 @@ namespace BooleanAlgebraASTTools {
         if (!Node) return "";
         
         if (Node->Type == BooleanAlgebraNodeType::Variable) {
-            auto* Variable = dynamic_cast<const VariableNode*>(Node.get());
+            auto* Variable = static_cast<const VariableNode*>(Node.get());
             if (Variable) return Variable->Value;
         }
         
         if (Node->Type == BooleanAlgebraNodeType::Constant) {
-            auto* Const = dynamic_cast<const ConstantNode*>(Node.get());
+            auto* Const = static_cast<const ConstantNode*>(Node.get());
             if (Const) return Const->Value == 0 ? "0" : "1";
         }
         
         if (IsUnaryOperator(Node->Type)) {
-            auto* Unary = dynamic_cast<const UnaryExpressionNode*>(Node.get());
+            auto* Unary = static_cast<const UnaryExpressionNode*>(Node.get());
             if (Unary) return "(" + Unary->Operator + SerializeNode(Unary->Node) + ")";
         }
         
-        auto* Binary = dynamic_cast<const BinaryExpressionNode*>(Node.get());
-        if (Binary) return "(" + SerializeNode(Binary->Left) + Binary->Operator + SerializeNode(Binary->Right) + ")";
+        if (IsBinaryOperator(Node->Type)) {
+            auto* Binary = static_cast<const BinaryExpressionNode*>(Node.get());
+            if (Binary) return "(" + SerializeNode(Binary->Left) + Binary->Operator + SerializeNode(Binary->Right) + ")";
+        }
         
         return "";
+    }
+    
+    static void GetVariable(const ASTNode& Node, vector<VariableNode*>& Variables) {
+        if (!Node) return;
+        if (Node->Type == BooleanAlgebraNodeType::Variable) {
+            auto* Variable = static_cast<const VariableNode*>(Node.get());
+            // if (Variable) Variables.push_back(Variable);
+        }
+    }
+    
+    static vector<VariableNode*> GetVariables(const ASTNode& RootNode) {
+        
     }
     
     static ASTNode ExtractNode(ASTNode& Target) { return std::move(Target); }
