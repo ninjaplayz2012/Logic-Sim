@@ -5,6 +5,7 @@
 
 namespace BooleanAlgebraASTTools {
     static bool IsValidNodeType(BooleanAlgebraNodeType Type) { return (int)Type >= 0 && (int)Type <= 8; }
+    static bool IsValidNodeType(BooleanAlgebraNodeType Type) { return (int)Type >= 0 && (int)Type <= 8; }
     static bool IsUnaryOperator(BooleanAlgebraNodeType Type) { return Type == BooleanAlgebraNodeType::NOT; }
     static bool IsBinaryOperator(BooleanAlgebraNodeType Type) { return (int)Type >= 3 && (int)Type <= 8; }
     
@@ -12,8 +13,13 @@ namespace BooleanAlgebraASTTools {
     static int GetOperationCount(const ASTNode& Node) {
         int Total = GetOperandCount(Node);
         
+    static int GetOperationCount(const ASTNode& Node) {
+        int Total = GetOperandCount(Node);
+        
         if (IsUnaryOperator(Node->Type)) {
             auto* Unary = dynamic_cast<const UnaryExpressionNode*>(Node.get());
+            if (Unary) Total += GetOperationCount(Unary->Node);
+        } else if (IsBinaryOperator) {
             if (Unary) Total += GetOperationCount(Unary->Node);
         } else if (IsBinaryOperator) {
             auto* Binary = dynamic_cast<const BinaryExpressionNode*>(Node.get());
