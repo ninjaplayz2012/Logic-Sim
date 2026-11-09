@@ -96,7 +96,7 @@ void HandleLogic(vector<string>& Equations) {
     
     for (auto& Equation : Equations) {
         std::cout << "Parsing Equation: " + Equation + "\n";
-        ParseEquation(Equation)->print();
+        BooleanAlgebraASTTools::ParseEquation(Equation)->print();
         std::cout << "\n";
         // std::cout << Equation + " → " + LogicEvaluator::SimplifyEquation(Equation) + "\n\n";
     }

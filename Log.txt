@@ -1,244 +1,72 @@
-Parsing Equation: ((¬(¬A))∨B)
-Binary Expression {
-	Operator: ∨
-	Unary Expression {
-		Operator: ¬
-		Unary Expression {
-			Operator: ¬
-			Variable: A
-		}
-	}
-	Variable: B
-}
 
-Parsing Equation: ((¬(¬A))∧(¬(¬B)))
-Binary Expression {
-	Operator: ∧
-	Unary Expression {
-		Operator: ¬
-		Unary Expression {
-			Operator: ¬
-			Variable: A
-		}
-	}
-	Unary Expression {
-		Operator: ¬
-		Unary Expression {
-			Operator: ¬
-			Variable: B
-		}
-	}
-}
+========== AST PARSING TESTS ==========
 
-Parsing Equation: (A∧0)
-Binary Expression {
-	Operator: ∧
-	Variable: A
-	Constant: 0
-}
+[PASS] StringToNodeType: ¬
+[PASS] StringToNodeType: ∧
+[PASS] StringToNodeType: ∨
+[PASS] StringToNodeType: ↓
+[PASS] StringToNodeType: ⊕
+[PASS] StringToNodeType: ⊙
+[PASS] StringToNodeType: ↑
+[PASS] StringToNodeType: Constant
+[PASS] StringToNodeType: Variable
+[PASS] StringToNodeType: Unknown
+[PASS] StringToNodeType: Invalid
+[PASS] StringToNodeType: 
+[PASS] Parse variable A
+[PASS] Parse variable B
+[PASS] Parse multi-character variable
+[PASS] Parse constant 0
+[PASS] Parse constant 1
+[PASS] Parse NOT A
+[PASS] Parse NOT B
+[PASS] Parse NOT 0
+[PASS] Parse NOT 1
+[PASS] Parse NOT of binary expression
+[PASS] Parse nested NOT
+[PASS] Parse triple NOT
+[PASS] Parse AND
+[PASS] Parse OR
+[PASS] Parse XOR
+[PASS] Parse XNOR
+[PASS] Parse NOR
+[PASS] Parse NAND
+[PASS] Parse constant AND
+[PASS] Parse constant OR
+[PASS] Parse constant XOR
+[PASS] Parse left-nested expression
+[PASS] Parse right-nested expression
+[PASS] Parse both sides nested
+[PASS] Parse nested unary and binary
+[PASS] Parse deeply nested expression
+[PASS] Parse mixed operators
+[PASS] Serialize variable
+[PASS] Serialize constant 0
+[PASS] Serialize constant 1
+[PASS] Serialize NOT
+[PASS] Serialize AND
+[PASS] Serialize OR
+[PASS] Serialize XOR
+[PASS] Serialize XNOR
+[PASS] Serialize NOR
+[PASS] Serialize NAND
+[PASS] Serialize nested expression
+[PASS] Serialize deeply nested expression
+[PASS] Round trip variable
+[PASS] Round trip constant 0
+[PASS] Round trip constant 1
+[PASS] Round trip NOT
+[PASS] Round trip AND
+[PASS] Round trip OR
+[PASS] Round trip XOR
+[PASS] Round trip XNOR
+[PASS] Round trip NOR
+[PASS] Round trip NAND
+[PASS] Round trip nested expression
+[PASS] Round trip deeply nested expression
+[PASS] Round trip mixed expression
 
-Parsing Equation: (A∨1)
-Binary Expression {
-	Operator: ∨
-	Variable: A
-	Constant: 1
-}
-
-Parsing Equation: (A∧1)
-Binary Expression {
-	Operator: ∧
-	Variable: A
-	Constant: 1
-}
-
-Parsing Equation: (A∨0)
-Binary Expression {
-	Operator: ∨
-	Variable: A
-	Constant: 0
-}
-
-Parsing Equation: (A∧(¬A))
-Binary Expression {
-	Operator: ∧
-	Variable: A
-	Unary Expression {
-		Operator: ¬
-		Variable: A
-	}
-}
-
-Parsing Equation: (A∨(¬A))
-Binary Expression {
-	Operator: ∨
-	Variable: A
-	Unary Expression {
-		Operator: ¬
-		Variable: A
-	}
-}
-
-Parsing Equation: (¬(¬(¬A)))
-Unary Expression {
-	Operator: ¬
-	Unary Expression {
-		Operator: ¬
-		Unary Expression {
-			Operator: ¬
-			Variable: A
-		}
-	}
-}
-
-Parsing Equation: (¬(¬(A∧0)))
-Unary Expression {
-	Operator: ¬
-	Unary Expression {
-		Operator: ¬
-		Binary Expression {
-			Operator: ∧
-			Variable: A
-			Constant: 0
-		}
-	}
-}
-
-Parsing Equation: (¬(¬(A∨1)))
-Unary Expression {
-	Operator: ¬
-	Unary Expression {
-		Operator: ¬
-		Binary Expression {
-			Operator: ∨
-			Variable: A
-			Constant: 1
-		}
-	}
-}
-
-Parsing Equation: ((A∧0)∨B)
-Binary Expression {
-	Operator: ∨
-	Binary Expression {
-		Operator: ∧
-		Variable: A
-		Constant: 0
-	}
-	Variable: B
-}
-
-Parsing Equation: ((A∨1)∧B)
-Binary Expression {
-	Operator: ∧
-	Binary Expression {
-		Operator: ∨
-		Variable: A
-		Constant: 1
-	}
-	Variable: B
-}
-
-Parsing Equation: ((A∧1)∨(B∧0))
-Binary Expression {
-	Operator: ∨
-	Binary Expression {
-		Operator: ∧
-		Variable: A
-		Constant: 1
-	}
-	Binary Expression {
-		Operator: ∧
-		Variable: B
-		Constant: 0
-	}
-}
-
-Parsing Equation: ((A∨0)∧(B∧1))
-Binary Expression {
-	Operator: ∧
-	Binary Expression {
-		Operator: ∨
-		Variable: A
-		Constant: 0
-	}
-	Binary Expression {
-		Operator: ∧
-		Variable: B
-		Constant: 1
-	}
-}
-
-Parsing Equation: (¬((A∧0)∨B))
-Unary Expression {
-	Operator: ¬
-	Binary Expression {
-		Operator: ∨
-		Binary Expression {
-			Operator: ∧
-			Variable: A
-			Constant: 0
-		}
-		Variable: B
-	}
-}
-
-Parsing Equation: (¬((A∨1)∧B))
-Unary Expression {
-	Operator: ¬
-	Binary Expression {
-		Operator: ∧
-		Binary Expression {
-			Operator: ∨
-			Variable: A
-			Constant: 1
-		}
-		Variable: B
-	}
-}
-
-Parsing Equation: ((¬(A∧B))∧A)
-Binary Expression {
-	Operator: ∧
-	Unary Expression {
-		Operator: ¬
-		Binary Expression {
-			Operator: ∧
-			Variable: A
-			Variable: B
-		}
-	}
-	Variable: A
-}
-
-Parsing Equation: ((¬(A∨B))∨A)
-Binary Expression {
-	Operator: ∨
-	Unary Expression {
-		Operator: ¬
-		Binary Expression {
-			Operator: ∨
-			Variable: A
-			Variable: B
-		}
-	}
-	Variable: A
-}
-
-Parsing Equation: (¬((A∧1)∨0))
-Unary Expression {
-	Operator: ¬
-	Binary Expression {
-		Operator: ∨
-		Binary Expression {
-			Operator: ∧
-			Variable: A
-			Constant: 1
-		}
-		Constant: 0
-	}
-}
-
-
-Equations: 20
-Total time: 0.075 ms (0.000 s)
-Average per equation: 0.004 ms
+========== TEST RESULTS ==========
+Passed: 64
+Failed: 0
+Total:  64

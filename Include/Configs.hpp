@@ -19,7 +19,7 @@
 #include "Classes/GraphicsEngine/Window.hpp"
 
 #include "Classes/LogicGates/LogicGates.hpp"
-#include "Classes/LogicGates/LogicEvaluater.hpp"
+#include "Classes/LogicGates/LogicSimplifier.hpp"
 #include "Classes/LogicGates/BooleanExpressions.hpp"
 
 // --[ Shaders ]--

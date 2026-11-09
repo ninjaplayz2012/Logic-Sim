@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include "Classes/LogicGates/BooleanAlgebraHelpers.hpp"
 
 // --{ Usings }--
 using std::string;
@@ -88,37 +89,3 @@ struct BinaryExpressionNode : BooleanAlgebraNode {
 
 // --{ Class Aliases }--
 using ASTNode = unique_ptr<BooleanAlgebraNode>;
-
-// --{ Functions }--
-static BooleanAlgebraNodeType StringToNodeType(string& String) {
-    if (String == "¬") return BooleanAlgebraNodeType::NOT;
-    else if (String == "∧") return BooleanAlgebraNodeType::AND;
-    else if (String == "∨") return BooleanAlgebraNodeType::OR;
-    else if (String == "↓") return BooleanAlgebraNodeType::NOR;
-    else if (String == "⊕") return BooleanAlgebraNodeType::XOR;
-    else if (String == "⊙") return BooleanAlgebraNodeType::XNOR;
-    else if (String == "↑") return BooleanAlgebraNodeType::NAND;
-    else if (String == "Constant") return BooleanAlgebraNodeType::Constant;
-    else if (String == "Variable") return BooleanAlgebraNodeType::Variable;
-    else return BooleanAlgebraNodeType::Unknown;
-}
-static ASTNode ParseEquation(const string& Equation) {
-    string Left, Right, Operator;
-    
-    if (Equation.starts_with("(¬")) return std::make_unique<UnaryExpressionNode>(
-        BooleanAlgebraNodeType::NOT, 
-        "¬", 
-        ParseEquation(Equation.substr(3, BooleanAlgebraHelpers::FindClosed(Equation, 0) - 3))
-    );
-    
-    if (BooleanAlgebraHelpers::SplitTopLevel(Equation, Left, Right, Operator)) return std::make_unique<BinaryExpressionNode>(
-        StringToNodeType(Operator),
-        Operator,
-        ParseEquation(Left ),
-        ParseEquation(Right)
-    );
-    
-    if (Equation == "0" || Equation == "1") return std::make_unique<ConstantNode>(Equation == "0" ? 0 : 1);
-    
-    return std::make_unique<VariableNode>(Equation);
-}
