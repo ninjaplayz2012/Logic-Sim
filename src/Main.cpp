@@ -22,12 +22,12 @@ int wmain(int ArgumentCount, wchar_t** Arguments) {
         string Equation(Length - 1, '\0');
         WideCharToMultiByte(CP_UTF8, 0, Arguments[i], -1, Equation.data(), Length, nullptr, nullptr);
         
-        if (Equation == "--debug" || Equation == "-d") LogicEvaluator::Debug = true;
+        if (Equation == "--debug" || Equation == "-d") LogicSimplifier::Debug = true;
         else if (Equation == "--logic" || Equation == "-l") DoLogic = true;
         else if (Equation == "--graphics" || Equation == "-g") DoGraphics = true;
-        else if (Equation == "--deepdebug" || Equation == "-dd") LogicEvaluator::DeepDebug = true;
-        else if (Equation == "--recursivedebug" || Equation == "-rd") LogicEvaluator::RecursiveDebug = true;
-        else if (Equation.find("--depth=", 0) == 0) LogicEvaluator::RecursiveDebugDepth = std::stoi(Equation.substr(8));
+        else if (Equation == "--deepdebug" || Equation == "-dd") LogicSimplifier::DeepDebug = true;
+        else if (Equation == "--recursivedebug" || Equation == "-rd") LogicSimplifier::RecursiveDebug = true;
+        else if (Equation.find("--depth=", 0) == 0) LogicSimplifier::RecursiveDebugDepth = std::stoi(Equation.substr(8));
         else Equations.push_back(Equation);
     }
     
@@ -96,9 +96,9 @@ void HandleLogic(vector<string>& Equations) {
     
     for (auto& Equation : Equations) {
         std::cout << "Parsing Equation: " + Equation + "\n";
-        ParseEquation(Equation)->print();
+        BooleanAlgebraASTTools::ParseEquation(Equation)->print();
         std::cout << "\n";
-        // std::cout << Equation + " → " + LogicEvaluator::SimplifyEquation(Equation) + "\n\n";
+        // std::cout << Equation + " → " + LogicSimplifier::SimplifyEquation(Equation) + "\n\n";
     }
     
     const auto TotalEnd = Clock::now();
