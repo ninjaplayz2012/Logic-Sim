@@ -40,10 +40,10 @@ struct VariableNode : BooleanAlgebraNode {
     string Value;
 };
 struct ConstantNode : BooleanAlgebraNode {
-    explicit ConstantNode(int Value) : BooleanAlgebraNode(BooleanAlgebraNodeType::Constant), Value(Value) { if (Value != 1 && Value != 0) throw std::invalid_argument("Only 0 and 1 are acceptable constants."); }
+    explicit ConstantNode(bool Value) : BooleanAlgebraNode(BooleanAlgebraNodeType::Constant), Value(Value) { if (Value != true && Value != false) throw std::invalid_argument("Only 0 and 1 are acceptable constants."); }
     void print(int Indent) const override { std::cout << string(Indent, '\t') + "Constant: " << Value << "\n"; }
     std::unique_ptr<BooleanAlgebraNode> Clone() const override { return std::make_unique<ConstantNode>(*this); }
-    int Value;
+    bool Value;
 };
 struct UnaryExpressionNode : BooleanAlgebraNode {
     UnaryExpressionNode(BooleanAlgebraNodeType Type, string Operator, unique_ptr<BooleanAlgebraNode> Node)

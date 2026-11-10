@@ -32,11 +32,11 @@ This section will hold the information needed for evaluation, simplification, co
 	- [ ] Decide and test the behavior for unsupported constants and invalid tokens.
 	- [ ] Add stress tests for deeply nested expressions.
 - [ ] 3. Boolean equivalence
-	- [ ] Implement `BooleanEquivalent()`.
-	- [ ] Compare expressions using truth tables for manageable variable counts.
-	- [ ] Test equivalent and non-equivalent expression pairs.
-	- [ ] Add randomized equivalence tests.
-	- [ ] Ensure equivalence checks handle every supported operator.
+	- [x] Implement `BooleanEquivalent()`.
+	- [x] Compare expressions using truth tables for manageable variable counts.
+	- [x] Test equivalent and non-equivalent expression pairs.
+	- [x] Add randomized equivalence tests.
+	- [x] Ensure equivalence checks handle every supported operator.
 - [ ] 4. Boolean transformations and algebraic laws
 	- [ ] Implement and test the required Boolean algebra transformations.
 	- [ ] Cover NAND, AND, XOR, XNOR, OR, and NOR behavior.
