@@ -19,8 +19,8 @@
 #include "Classes/GraphicsEngine/Window.hpp"
 
 #include "Classes/LogicGates/LogicGates.hpp"
-#include "Classes/LogicGates/BooleanAlgebra/LogicSimplifier.hpp"
 #include "Classes/LogicGates/BooleanAlgebra/LogicEvaluator.hpp"
+#include "Classes/LogicGates/BooleanAlgebra/LogicSimplifier.hpp"
 #include "Classes/LogicGates/BooleanAlgebra/BooleanExpressions.hpp"
 
 // --[ Shaders ]--

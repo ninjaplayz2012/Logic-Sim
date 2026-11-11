@@ -1,6 +1,7 @@
 #include "Configs.hpp"
 
 const glm::ivec2 WindowSize{400, 400};
+static bool ShowTruthTables = false;
 
 // Functions
 void HandleGraphics();
@@ -22,12 +23,12 @@ int wmain(int ArgumentCount, wchar_t** Arguments) {
         string Equation(Length - 1, '\0');
         WideCharToMultiByte(CP_UTF8, 0, Arguments[i], -1, Equation.data(), Length, nullptr, nullptr);
         
-        if (Equation == "--debug" || Equation == "-d") LogicSimplifier::Debug = true;
+        if (Equation == "--debug" || Equation == "-d") { LogicSimplifier::Debug = true; LogicEvaluator::Debug = true; }
+        else if (Equation == "--debug-logic-simplifier" || Equation == "-dls") LogicSimplifier::Debug = true;
+        else if (Equation == "--debug-logic-evaluator" || Equation == "-dle") LogicEvaluator::Debug = true;
+        else if (Equation == "--show-truth-tables" || Equation == "-stt") ShowTruthTables = true;
         else if (Equation == "--logic" || Equation == "-l") DoLogic = true;
         else if (Equation == "--graphics" || Equation == "-g") DoGraphics = true;
-        else if (Equation == "--deepdebug" || Equation == "-dd") LogicSimplifier::DeepDebug = true;
-        else if (Equation == "--recursivedebug" || Equation == "-rd") LogicSimplifier::RecursiveDebug = true;
-        else if (Equation.find("--depth=", 0) == 0) LogicSimplifier::RecursiveDebugDepth = std::stoi(Equation.substr(8));
         else Equations.push_back(Equation);
     }
     
@@ -95,7 +96,15 @@ void HandleLogic(vector<string>& Equations) {
     const auto TotalStart = Clock::now();
     
     for (auto& Equation : Equations) {
-        std::cout << Equation + " → " << (LogicEvaluator::EvaluateEquation(Equation) ? "True" : "False") << "\n";
+        if (LogicEvaluator::CanEvaluate(Equation)) std::cout << Equation + " → " + (LogicEvaluator::EvaluateEquation(Equation) ? "True" : "False") + "\n";
+        else {
+            vector<ASTNode> ASTEquations;
+            ASTEquations.push_back(BooleanAlgebraASTTools::ParseEquation(Equation));
+            ASTEquations.push_back(BooleanAlgebraASTTools::ParseEquation(LogicSimplifier::SimplifyEquation(Equation)));
+            std::cout << Equation + " → " + LogicSimplifier::SimplifyEquation(Equation) + "\n";
+            if (ShowTruthTables) LogicEvaluator::PrintTruthTable(ASTEquations);
+            std::cout << "\n";
+        }
     }
     
     const auto TotalEnd = Clock::now();

@@ -97,8 +97,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "2a97156c2cf9bad9",
@@ -206,8 +205,9 @@
   },
   "active": "fea60a8797b912ef",
   "lastOpenFiles": [
-    "Logic Simulation.md",
+    "Untitled.canvas",
     "Documentation.md",
+    "Logic Simulation.md",
     "Untitled.base",
     "Untitled 1.base"
   ]

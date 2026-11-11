@@ -98,6 +98,26 @@ namespace BooleanAlgebraASTTools {
         else if (String == "Variable") return BooleanAlgebraNodeType::Variable;
         else return BooleanAlgebraNodeType::Unknown;
     }
+    static string NodeTypeToOperator(BooleanAlgebraNodeType NodeType) {
+        switch (NodeType) {
+            case (BooleanAlgebraNodeType::NOT):
+                return "¬";
+            case (BooleanAlgebraNodeType::AND):
+                return "∧";
+            case (BooleanAlgebraNodeType::OR):
+                return "∨";
+            case (BooleanAlgebraNodeType::XOR):
+                return "⊕";
+            case (BooleanAlgebraNodeType::XNOR):
+                return "⊙";
+            case (BooleanAlgebraNodeType::NOR):
+                return "↓";
+            case (BooleanAlgebraNodeType::NAND):
+                return "↑";
+            default:
+                throw std::invalid_argument("Invalid type to convert to operator");
+        }
+    }
     static ASTNode ParseEquation(const string& Equation) {
         string Left, Right, Operator;
         

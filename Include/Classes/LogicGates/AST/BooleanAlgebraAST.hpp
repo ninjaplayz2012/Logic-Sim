@@ -55,11 +55,17 @@ struct UnaryExpressionNode : BooleanAlgebraNode {
         std::cout << std::string(Indent, '\t') << "}\n";
     }
     
-    std::unique_ptr<BooleanAlgebraNode> Clone() const override { return std::make_unique<UnaryExpressionNode>(
-        Type,
-        Operator,
-        Node->Clone()
-    ); }
+    std::unique_ptr<BooleanAlgebraNode> Clone() const override {
+        if (!Node) {
+            throw std::runtime_error("UnaryExpressionNode::Clone(): Missing child node.");
+        }
+    
+        return std::make_unique<UnaryExpressionNode>(
+            Type,
+            Operator,
+            Node->Clone()
+        );
+    }
     
     unique_ptr<BooleanAlgebraNode> Node;
     string Operator;
@@ -75,12 +81,18 @@ struct BinaryExpressionNode : BooleanAlgebraNode {
         std::cout << std::string(Indent, '\t') << "}\n";
     }
     
-    std::unique_ptr<BooleanAlgebraNode> Clone() const override { return std::make_unique<BinaryExpressionNode>(
-        Type,
-        Operator,
-        Left->Clone(),
-        Right->Clone()
-    ); }
+    std::unique_ptr<BooleanAlgebraNode> Clone() const override {
+        if (!Left || !Right) {
+            throw std::runtime_error("BinaryExpressionNode::Clone(): Missing child node.");
+        }
+        
+        return std::make_unique<BinaryExpressionNode>(
+            Type,
+            Operator,
+            Left->Clone(),
+            Right->Clone()
+        );
+    }
     
     unique_ptr<BooleanAlgebraNode> Left;
     unique_ptr<BooleanAlgebraNode> Right;
