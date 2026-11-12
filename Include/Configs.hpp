@@ -5,7 +5,6 @@
 #include <iostream>
 #include <windows.h>
 #include <chrono>
-#include <fstream>
 #include <iomanip>
 
 // --[ OpenGL ]--
@@ -19,8 +18,9 @@
 #include "Classes/GraphicsEngine/Window.hpp"
 
 #include "Classes/LogicGates/LogicGates.hpp"
-#include "Classes/LogicGates/LogicEvaluater.hpp"
-#include "Classes/LogicGates/BooleanExpressions.hpp"
+#include "Classes/LogicGates/BooleanAlgebra/LogicEvaluator.hpp"
+#include "Classes/LogicGates/BooleanAlgebra/LogicSimplifier.hpp"
+#include "Classes/LogicGates/BooleanAlgebra/BooleanExpressions.hpp"
 
 // --[ Shaders ]--
 #include "DefaultVertexShader.vert.hpp"

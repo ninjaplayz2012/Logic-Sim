@@ -1,28 +1,39 @@
 #include "Configs.hpp"
 
 const glm::ivec2 WindowSize{400, 400};
+static bool ShowTruthTables = false;
 
 // Functions
 void HandleGraphics();
 void HandleLogic(vector<string>& Equations);
 
+// Main
 int wmain(int ArgumentCount, wchar_t** Arguments) {
     SetConsoleOutputCP(CP_UTF8);
     
     vector<string> Equations;
+    
+    bool DoGraphics = false;
+    bool DoLogic = false;
+    
     for (int i = 1; i < ArgumentCount; i++) {
         int Length = WideCharToMultiByte(CP_UTF8, 0, Arguments[i], -1, nullptr, 0, nullptr, nullptr);
         if (Length <= 0) continue;
         
-        string Equation(Length, '\0');
+        string Equation(Length - 1, '\0');
         WideCharToMultiByte(CP_UTF8, 0, Arguments[i], -1, Equation.data(), Length, nullptr, nullptr);
         
-        Equation.pop_back();
-        Equations.push_back(Equation);
+        if (Equation == "--debug" || Equation == "-d") { LogicSimplifier::Debug = true; LogicEvaluator::Debug = true; }
+        else if (Equation == "--debug-logic-simplifier" || Equation == "-dls") LogicSimplifier::Debug = true;
+        else if (Equation == "--debug-logic-evaluator" || Equation == "-dle") LogicEvaluator::Debug = true;
+        else if (Equation == "--show-truth-tables" || Equation == "-stt") ShowTruthTables = true;
+        else if (Equation == "--logic" || Equation == "-l") DoLogic = true;
+        else if (Equation == "--graphics" || Equation == "-g") DoGraphics = true;
+        else Equations.push_back(Equation);
     }
     
-    HandleLogic(Equations);
-    // HandleGraphics();
+    if (DoLogic) HandleLogic(Equations);
+    if (DoGraphics) HandleGraphics();
     
     return 0;
 }
@@ -80,13 +91,20 @@ void HandleGraphics() {
 
 void HandleLogic(vector<string>& Equations) {
     unordered_set<LogicGate*> VisitedGates;
-    LogicEvaluator Evaluator;
     
     using Clock = std::chrono::steady_clock;
     const auto TotalStart = Clock::now();
     
     for (auto& Equation : Equations) {
-        std::cout << Equation + " → " + Evaluator.SimplifyEquation(Equation) + "\n";
+        if (LogicEvaluator::CanEvaluate(Equation)) std::cout << Equation + " → " + (LogicEvaluator::EvaluateEquation(Equation) ? "True" : "False") + "\n";
+        else {
+            vector<ASTNode> ASTEquations;
+            ASTEquations.push_back(BooleanAlgebraASTTools::ParseEquation(Equation));
+            ASTEquations.push_back(BooleanAlgebraASTTools::ParseEquation(LogicSimplifier::SimplifyEquation(Equation)));
+            std::cout << Equation + " → " + LogicSimplifier::SimplifyEquation(Equation) + "\n";
+            if (ShowTruthTables) LogicEvaluator::PrintTruthTable(ASTEquations);
+            std::cout << "\n";
+        }
     }
     
     const auto TotalEnd = Clock::now();
@@ -100,7 +118,7 @@ void HandleLogic(vector<string>& Equations) {
 }
 
 /* 
-./build/LogicSim.exe "((¬(¬A))∨B)" "((¬(¬A))∧(¬(¬B)))" "(A∧0)" "(A∨1)" "(A∧1)" "(A∨0)" "(A∧(¬A))" "(A∨(¬A))" "(¬(¬(¬A)))" "(¬(¬(A∧0)))" "(¬(¬(A∨1)))" "((A∧0)∨B)" "((A∨1)∧B)" "((A∧1)∨(B∧0))" "((A∨0)∧(B∧1))" "(¬((A∧0)∨B))" "(¬((A∨1)∧B))" "((¬(A∧B))∧A)" "((¬(A∨B))∨A)" "(¬((A∧1)∨0))"
+./build/LogicSim.exe -l "((¬(¬A))∨B)" "((¬(¬A))∧(¬(¬B)))" "(A∧0)" "(A∨1)" "(A∧1)" "(A∨0)" "(A∧(¬A))" "(A∨(¬A))" "(¬(¬(¬A)))" "(¬(¬(A∧0)))" "(¬(¬(A∨1)))" "((A∧0)∨B)" "((A∨1)∧B)" "((A∧1)∨(B∧0))" "((A∨0)∧(B∧1))" "(¬((A∧0)∨B))" "(¬((A∨1)∧B))" "((¬(A∧B))∧A)" "((¬(A∨B))∨A)" "(¬((A∧1)∨0))"
 
 ((¬(¬A))∨B) → (A∨B)
 ((¬(¬A))∧(¬(¬B))) → (A∧B)

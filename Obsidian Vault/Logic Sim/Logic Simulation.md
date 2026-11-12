@@ -1,0 +1,79 @@
+# Boolean Algebra
+This section will hold the information needed for evaluation, simplification, construction, saving, and use of logic gates in the simulation.
+## Logic Simplifier
+- [ ]  Project-wide requirements
+	- [ ] Keep computational cost low; prioritize efficient algorithms and data structures.
+	- [ ] Support Boolean operators: NOT, AND, OR, NAND, NOR, XOR, and XNOR.
+	- [ ] Preserve strict parenthesized expression syntax.
+	- [ ] Support symbolic variables/states, not only `0` and `1`.
+	- [ ] Provide regular equation output after transformations/simplification.
+	- [ ] Keep debug output configurable through the project's debug flags.
+	- [ ] Add robust error checking and invalid-input handling.
+	- [ ] Optimize only after correctness is established.
+	- [ ] Target 1,000,000+ fast checks for equations with roughly 10–20 terms.
+- [x] 1. AST representation and ownership
+	- [x] Define AST node types for variables, constants, unary expressions, and binary expressions.
+	- [x] Implement recursive node validation with `ValidateNode()`.
+	- [x] Implement recursive deep cloning with `Clone()`.
+	- [x] Implement ownership transfer with `ExtractNode()`.
+	- [x] Implement replacement with `ReplaceNode()`.
+	- [x] Implement structural comparison with `StructurallyEqual()`.
+	- [x] Test AST utilities and ownership behavior (62 tests passed).
+- [ ] 2. Parsing and serialization
+	- [x] Map the supported operator symbols to AST node types.
+	- [x] Parse variables and constants.
+	- [x] Parse unary expressions.
+	- [x] Parse all six binary operator types.
+	- [x] Parse nested expressions.
+	- [x] Serialize AST nodes back into parenthesized equations.
+	- [x] Test parse/serialize round trips (64 parsing tests passed).
+	- [ ] Define and enforce the intended variable-name grammar.
+	- [ ] Reject malformed expressions consistently: missing operands, unmatched parentheses, empty input, and invalid operator placement.
+	- [ ] Decide and test the behavior for unsupported constants and invalid tokens.
+	- [ ] Add stress tests for deeply nested expressions.
+- [ ] 3. Boolean equivalence
+	- [x] Implement `BooleanEquivalent()`.
+	- [x] Compare expressions using truth tables for manageable variable counts.
+	- [x] Test equivalent and non-equivalent expression pairs.
+	- [x] Add randomized equivalence tests.
+	- [x] Ensure equivalence checks handle every supported operator.
+- [ ] 4. Boolean transformations and algebraic laws
+	- [ ] Implement and test the required Boolean algebra transformations.
+	- [ ] Cover NAND, AND, XOR, XNOR, OR, and NOR behavior.
+	- [ ] Preserve symbolic variables and strict parenthesization through transformations.
+	- [ ] Test each law independently and in combinations.
+	- [ ] Verify transformations preserve truth-table equivalence.
+- [ ] 5. Simplification
+	- [ ] Implement simplification using the supported Boolean laws.
+	- [ ] Preserve symbolic expressions rather than reducing everything to constants.
+	- [ ] Prefer reducing the least-cost subexpression first.
+	- [ ] Expand expressions only when doing so enables a useful subsequent reduction.
+	- [ ] Prevent simplification cycles.
+	- [ ] Serialize simplified results into regular equation form.
+	- [ ] Add regression tests for previously failing simplification cases.
+- [ ] 6. Cost model
+	- [ ] Define the computational cost model for expressions.
+	- [ ] Count relevant operations consistently.
+	- [ ] Test cost calculations across all operator types.
+	- [ ] Use the cost model to guide simplification and later optimization.
+- [ ] 7. Optimization
+	- [ ] Optimize only after parsing, evaluation, transformations, and simplification are correct.
+	- [ ] Minimize computational cost without changing expression meaning.
+	- [ ] Compare optimized results against the unoptimized evaluator.
+	- [ ] Keep optimization separate from the mandatory algebraic-law simplifier where appropriate.
+- [ ] 8. Verification, regression, and performance
+	- [x] Run AST utility tests (62 passed, 0 failed).
+	- [x] Run AST parsing/serialization tests (64 passed, 0 failed).
+	- [ ] Add malformed-input tests after parser error behavior is defined.
+	- [ ] Add exhaustive truth-table tests for small expressions.
+	- [ ] Add randomized AST generation and parse/serialize round-trip tests.
+	- [ ] Add randomized equivalence tests.
+	- [ ] Maintain regression tests for every discovered bug.
+	- [ ] Benchmark representative and worst-case expressions.
+	- [ ] Verify the 1,000,000+ check performance target for 10–20-term equations.
+	- [ ] Measure runtime and memory use; avoid optimizing based only on intuition.
+## Logic Evaluator
+
+---
+# Graphics
+This section will hold the information for the graphics engine and the graphics of the program including UI/UX.

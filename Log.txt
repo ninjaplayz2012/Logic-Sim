@@ -1,25 +1,6 @@
-(Pre-Complementation) Equation: ((¬(A∧(B∧C)))∧C)
-(Post-Complementation) Equation: ((¬(A∧(B∧C)))∧C)
-(Pre-Annihilation) Equation: ((¬(A∧(B∧C)))∧C)
-(Post-Annihilation) Equation: ((¬(A∧(B∧C)))∧C)
-(Pre-Identity) Equation: ((¬(A∧(B∧C)))∧C)
-(Post-Identity) Equation: ((¬(A∧(B∧C)))∧C)
-(Pre-Idempotence) Equation: ((¬(A∧(B∧C)))∧C)
-(Post-Idempotence) Equation: ((¬(A∧(B∧C)))∧C)
-(Pre-Absorption) Equation: ((¬(A∧(B∧C)))∧C)
-(Post-Absorption) Equation: ((¬(A∧(B∧C)))∧C)
-(Pre-DoubleNegation) Equation: ((¬(A∧(B∧C)))∧C)
-(Post-DoubleNegation) Equation: ((¬(A∧(B∧C)))∧C)
-(Pre-DeMorgan) Equation: ((¬(A∧(B∧C)))∧C)
-(Post-DeMorgan) Equation: ((¬(A∧(B∧C)))∧C)
-(Pre-Distributivity) Equation: ((¬(A∧(B∧C)))∧C)
-(Post-Distributivity) Equation: ((¬(A∧(B∧C)))∧C)
-(Pre-Associativity) Equation: ((¬(A∧(B∧C)))∧C)
-(Post-Associativity) Equation: ((¬(A∧(B∧C)))∧C)
-(Pre-Parentheses) Equation: ((¬(A∧(B∧C)))∧C)
-(Post-Parentheses) Equation: ((¬(A∧(B∧C)))∧C)
-((¬(A∧(B∧C)))∧C) → ((¬(A∧(B∧C)))∧C)
+(((((A∧B)∨(C∧D))⊕((E∨F)∧(G∨H)))∧(((A↑C)∨(B↓D))⊙((E∧G)∨(F∧H))))∨((((A⊕C)∧(B⊙D))↑((E↓F)∨(G↑H)))∧(((A∨E)⊙(B∧F))↓((C∧G)⊕(D∨H))))) → (((((A∧B)∨(C∧D))⊕((E∨F)∧(G∨H)))∧(((E∧G)∨(F∧H))⊕((A∧C)∧(B∨D))))∨((((A⊕C)∧(B⊙D))∧((E∨F)↑(G∧H)))↓(((A∨E)⊙(B∧F))∨((C∧G)⊕(D∨H)))))
+
 
 Equations: 1
-Total time: 0.375 ms (0.000 s)
-Average per equation: 0.375 ms
+Total time: 170.345 ms (0.170 s)
+Average per equation: 170.345 ms
