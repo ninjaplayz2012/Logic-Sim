@@ -5,7 +5,6 @@
 #include <iostream>
 #include <windows.h>
 #include <chrono>
-#include <fstream>
 #include <iomanip>
 
 // --[ OpenGL ]--

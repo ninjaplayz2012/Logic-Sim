@@ -2,15 +2,18 @@
 
 // --{ Includes }--
 #include <string>
+#include <vector>
 #include <stdexcept>
+#include <chrono>
 #include <iomanip>
+#include <utility>
 #include <iostream>
 #include "Classes/LRUCache.hpp"
 #include "Classes/LogicGates/AST/BooleanAlgebraAST.hpp"
 #include "Classes/LogicGates/AST/BooleanAlgebraASTTools.hpp"
 
 // --{ Using(s) }--
-using std::string;
+using std::string, std::vector, std::pair;
 using namespace BooleanAlgebraASTTools;
 
 // --{ Cache(s) }--
@@ -27,7 +30,29 @@ static size_t GetDisplayWidth(const string& Value) {
     return Count;
 }
 
+// --{ Enums }--
+enum class OperationType {
+    AND,
+    OR,
+    NOT,
+    XOR,
+    XNOR,
+    NAND,
+    NOR,
+    PUSH
+};
+
 // --{ Classes }--
+struct Operation {
+    OperationType OPCode;
+    bool Input;
+};
+
+struct CompiledExpression {
+    vector<Operation> Operations;
+    vector<pair<size_t, size_t>> VariablePushes;
+};
+
 class LogicEvaluator {
     public:
         inline static bool Debug = false;
@@ -53,12 +78,13 @@ class LogicEvaluator {
         
         // --[ ASTNode Evaluation ]--
         static bool EvaluateEquation(ASTNode Node, bool Cache = false) { 
-            ASTNode ClonedNode = Node->Clone();
-            EvaluateEquation(&ClonedNode, Cache); 
+            EvaluateEquation(&Node, Cache); 
             auto* Constant = static_cast<ConstantNode*>(Node.get()); 
             return Constant->Value; 
         }
         static void EvaluateEquation(ASTNode* Node, bool Cache = false) { 
+            if (!CanEvaluate(*Node)) return;
+            
             // --( Cache )--
             auto Cached = ExpressionCache.Get(SerializeNode(*Node));
             if (Cached.has_value()) { 
@@ -68,33 +94,16 @@ class LogicEvaluator {
             }
             
             // --( Node Evaluation )--
-            BooleanAlgebraNodeType Type = (*Node)->Type;
-            
-            if (IsUnaryOperator(Type)) {
-                if (Type == BooleanAlgebraNodeType::NOT) NOT(Node);
-                else throw std::runtime_error("Invalid Unary Node Type");
-            } else if (IsBinaryOperator(Type)) {
-                if      (Type == BooleanAlgebraNodeType::AND ) AND (Node);
-                else if (Type == BooleanAlgebraNodeType::OR  ) OR  (Node);
-                else if (Type == BooleanAlgebraNodeType::XOR ) XOR (Node);
-                else if (Type == BooleanAlgebraNodeType::XNOR) XNOR(Node);
-                else if (Type == BooleanAlgebraNodeType::NOR ) NOR (Node);
-                else if (Type == BooleanAlgebraNodeType::NAND) NAND(Node);
-                else throw std::runtime_error("Invalid Binary Node Type");
-            } else if (Type != BooleanAlgebraNodeType::Constant) {
-                if (Type == BooleanAlgebraNodeType::Variable) {
-                    auto* Variable = static_cast<VariableNode*>((*Node).get());
-                    std::cout << "Value: " << Variable->Value << "\n";
-                }
-                
-                throw std::runtime_error("Tried evaluating an invalid type: " + NodeTypeToString(Type) + "\n");
-            }
+            vector<Operation> Operations = ConvertToByteCode(*Node);
+            bool Value = EvaluateByteCode(Operations);
             
             // --( Caching )--
             if (Cache) {
-                auto* Constant = static_cast<ConstantNode*>((*Node).get());
-                ExpressionCache.Put(SerializeNode(*Node), Constant->Value);
+                ExpressionCache.Put(SerializeNode(*Node), Value);
             }
+            
+            // --( Updating )--
+            *Node = std::make_unique<ConstantNode>(Value);
         }
         static bool CanEvaluate(const ASTNode& Node) { return GetVariables(Node).size() == 0; }
         
@@ -201,89 +210,91 @@ class LogicEvaluator {
             }
         }
         
-    private:
-        static void NOT(ASTNode* Node) {
-            if ((*Node)->Type != BooleanAlgebraNodeType::NOT) throw std::invalid_argument("Node is not a NOT gate.");
-            auto* Unary = static_cast<UnaryExpressionNode*>((*Node).get());
-            
-            if (Unary->Node->Type != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Unary->Node);
-            auto* Constant = static_cast<ConstantNode*>(Unary->Node.get());
-            ASTNode NegatedConstant = std::make_unique<ConstantNode>(!Constant->Value);
-            
-            *Node = std::move(NegatedConstant);
+        static vector<Operation> ConvertToByteCode(const ASTNode& Node) {
+            vector<Operation> Operations;
+            ConvertToByteCode(Node, Operations);
+            return Operations;
         }
-        static void AND(ASTNode* Node) {
-            if ((*Node)->Type != BooleanAlgebraNodeType::AND) throw std::invalid_argument("Node is not an AND gate.");
-            auto* Binary = static_cast<BinaryExpressionNode*>((*Node).get());
-            
-            if (Binary->Left->Type  != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Left );
-            if (Binary->Right->Type != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Right);
-            auto* ConstantA = static_cast<ConstantNode*>(Binary->Left.get() );
-            auto* ConstantB = static_cast<ConstantNode*>(Binary->Right.get());
-            ASTNode CombinedConstant = std::make_unique<ConstantNode>(ConstantA->Value && ConstantB->Value);
-            
-            *Node = std::move(CombinedConstant);
+        static void ConvertToByteCode(const ASTNode& Node, vector<Operation>& Operations) {
+            if (!Node) throw std::invalid_argument("Cannot compile a null AST node.");
+        
+            if (Node->Type == BooleanAlgebraNodeType::Constant) {
+                auto* Constant = static_cast<const ConstantNode*>(Node.get());
+                Operations.emplace_back(OperationType::PUSH, Constant->Value);
+            }
+            else if (IsUnaryOperator(Node->Type)) {
+                auto* Unary = static_cast<const UnaryExpressionNode*>(Node.get());
+                ConvertToByteCode(Unary->Node, Operations);
+                Operations.push_back({ OperationType::NOT, {} });
+            }
+            else if (IsBinaryOperator(Node->Type)) {
+                auto* Binary = static_cast<const BinaryExpressionNode*>(Node.get());
+                ConvertToByteCode(Binary->Left, Operations);
+                ConvertToByteCode(Binary->Right, Operations);
+        
+                OperationType OPCode;
+                switch (Node->Type) {
+                    case BooleanAlgebraNodeType::AND:  OPCode = OperationType::AND;  break;
+                    case BooleanAlgebraNodeType::OR:   OPCode = OperationType::OR;   break;
+                    case BooleanAlgebraNodeType::XOR:  OPCode = OperationType::XOR;  break;
+                    case BooleanAlgebraNodeType::XNOR: OPCode = OperationType::XNOR; break;
+                    case BooleanAlgebraNodeType::NAND: OPCode = OperationType::NAND; break;
+                    case BooleanAlgebraNodeType::NOR:  OPCode = OperationType::NOR;  break;
+                    default: throw std::runtime_error("Invalid Binary Node Type.");
+                }
+                Operations.push_back({ OPCode, {} });
+            }
+            else throw std::runtime_error("Cannot compile invalid AST node type.");
         }
-        static void OR(ASTNode* Node) {
-            if ((*Node)->Type != BooleanAlgebraNodeType::OR) throw std::invalid_argument("Node is not an OR gate.");
-            auto* Binary = static_cast<BinaryExpressionNode*>((*Node).get());
+        
+        static void CompileExpression(const ASTNode& Node, const unordered_map<string, size_t>& VariableIndices, CompiledExpression& Result) {
+            if (!Node) throw std::invalid_argument("AST contains a null node.");
             
-            if (Binary->Left->Type  != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Left );
-            if (Binary->Right->Type != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Right);
-            auto* ConstantA = static_cast<ConstantNode*>(Binary->Left.get() );
-            auto* ConstantB = static_cast<ConstantNode*>(Binary->Right.get());
-            ASTNode CombinedConstant = std::make_unique<ConstantNode>(ConstantA->Value || ConstantB->Value);
-            
-            *Node = std::move(CombinedConstant);
+            if (Node->Type == BooleanAlgebraNodeType::Variable) {
+                auto* Variable = static_cast<const VariableNode*>(Node.get());
+                size_t VariableIndex = VariableIndices.at(Variable->Value);
+                size_t InstructionIndex = Result.Operations.size();
+                
+                Result.Operations.push_back({ OperationType::PUSH, false });
+                Result.VariablePushes.emplace_back(InstructionIndex, VariableIndex);
+            } else if (Node->Type == BooleanAlgebraNodeType::Constant) {
+                auto* Constant = static_cast<const ConstantNode*>(Node.get());
+                Result.Operations.push_back({ OperationType::PUSH, Constant->Value });
+            } else if (IsUnaryOperator(Node->Type)) {
+                auto* Unary = static_cast<const UnaryExpressionNode*>(Node.get());
+                
+                CompileExpression(Unary->Node, VariableIndices, Result);
+                
+                Result.Operations.push_back({ OperationType::NOT, false });
+            } else if (IsBinaryOperator(Node->Type)){
+                auto* Binary = static_cast<const BinaryExpressionNode*>(Node.get());
+                
+                CompileExpression(Binary->Left , VariableIndices, Result);
+                CompileExpression(Binary->Right, VariableIndices, Result);
+                
+                OperationType OPCode;
+                
+                switch (Node->Type) {
+                    case BooleanAlgebraNodeType::AND:  OPCode = OperationType::AND;  break;
+                    case BooleanAlgebraNodeType::OR:   OPCode = OperationType::OR;   break;
+                    case BooleanAlgebraNodeType::XOR:  OPCode = OperationType::XOR;  break;
+                    case BooleanAlgebraNodeType::XNOR: OPCode = OperationType::XNOR; break;
+                    case BooleanAlgebraNodeType::NAND: OPCode = OperationType::NAND; break;
+                    case BooleanAlgebraNodeType::NOR:  OPCode = OperationType::NOR;  break;
+                    default: throw std::runtime_error("Invalid Binary Node Type.");
+                }
+                
+                Result.Operations.push_back({ OPCode, false });
+            } else throw std::runtime_error("Cannot compile invalid AST node type.");
         }
-        static void XOR(ASTNode* Node) {
-            if ((*Node)->Type != BooleanAlgebraNodeType::XOR) throw std::invalid_argument("Node is not a XOR gate.");
-            auto* Binary = static_cast<BinaryExpressionNode*>((*Node).get());
-            
-            if (Binary->Left->Type  != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Left );
-            if (Binary->Right->Type != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Right);
-            auto* ConstantA = static_cast<ConstantNode*>(Binary->Left.get() );
-            auto* ConstantB = static_cast<ConstantNode*>(Binary->Right.get());
-            ASTNode CombinedConstant = std::make_unique<ConstantNode>(ConstantA->Value != ConstantB->Value);
-            
-            *Node = std::move(CombinedConstant);
-        }
-        static void XNOR(ASTNode* Node) {
-            if ((*Node)->Type != BooleanAlgebraNodeType::XNOR) throw std::invalid_argument("Node is not a XNOR gate.");
-            auto* Binary = static_cast<BinaryExpressionNode*>((*Node).get());
-            
-            if (Binary->Left->Type  != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Left );
-            if (Binary->Right->Type != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Right);
-            auto* ConstantA = static_cast<ConstantNode*>(Binary->Left.get() );
-            auto* ConstantB = static_cast<ConstantNode*>(Binary->Right.get());
-            ASTNode CombinedConstant = std::make_unique<ConstantNode>(ConstantA->Value == ConstantB->Value);
-            
-            *Node = std::move(CombinedConstant);
-        }
-        static void NOR(ASTNode* Node) {
-            if ((*Node)->Type != BooleanAlgebraNodeType::NOR) throw std::invalid_argument("Node is not a NOR gate.");
-            auto* Binary = static_cast<BinaryExpressionNode*>((*Node).get());
-            
-            if (Binary->Left->Type  != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Left );
-            if (Binary->Right->Type != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Right);
-            auto* ConstantA = static_cast<ConstantNode*>(Binary->Left.get() );
-            auto* ConstantB = static_cast<ConstantNode*>(Binary->Right.get());
-            ASTNode CombinedConstant = std::make_unique<ConstantNode>(!(ConstantA->Value || ConstantB->Value));
-            
-            *Node = std::move(CombinedConstant);
-        }
-        static void NAND(ASTNode* Node) {
-            if ((*Node)->Type != BooleanAlgebraNodeType::NAND) throw std::invalid_argument("Node is not a NAND gate.");
-            auto* Binary = static_cast<BinaryExpressionNode*>((*Node).get());
-            
-            if (Binary->Left->Type  != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Left );
-            if (Binary->Right->Type != BooleanAlgebraNodeType::Constant) EvaluateEquation(&Binary->Right);
-            auto* ConstantA = static_cast<ConstantNode*>(Binary->Left.get() );
-            auto* ConstantB = static_cast<ConstantNode*>(Binary->Right.get());
-            ASTNode CombinedConstant = std::make_unique<ConstantNode>(!(ConstantA->Value && ConstantB->Value));
-            
-            *Node = std::move(CombinedConstant);
-        }
+        static CompiledExpression CompileExpression(const ASTNode& RootNode, const unordered_map<string, size_t>& VariableIndices) {
+            CompiledExpression Result;
+            CompileExpression(RootNode, VariableIndices, Result);
+            return Result;
+        };
+        
+        static bool EvaluateByteCode(vector<Operation>& Operations);
+        static bool EvaluateAndCompareByteCode(vector<Operation>& OperationsA, vector<Operation>& OperationsB);
 };
 
 // --{ Methods }--
@@ -296,8 +307,8 @@ static bool BooleanAlgebraASTTools::BooleanEquivalent(const ASTNode& NodeA, cons
         return VariableA->Value == VariableB->Value;
     }
     if (NodeA->Type == BooleanAlgebraNodeType::Constant && NodeB->Type == BooleanAlgebraNodeType::Constant) {
-        auto*  ConstantA = static_cast<ConstantNode*>(NodeA.get());
-        auto*  ConstantB = static_cast<ConstantNode*>(NodeB.get());
+        auto* ConstantA = static_cast<ConstantNode*>(NodeA.get());
+        auto* ConstantB = static_cast<ConstantNode*>(NodeB.get());
         return ConstantA->Value == ConstantB->Value;
     }
     
@@ -319,45 +330,35 @@ static bool BooleanAlgebraASTTools::BooleanEquivalent(const ASTNode& NodeA, cons
         }
     }
     
+    CompiledExpression CompiledA = LogicEvaluator::CompileExpression(NodeA, VariableIndices);
+    CompiledExpression CompiledB = LogicEvaluator::CompileExpression(NodeB, VariableIndices);
+    
     size_t Size = Variables.size();
     vector<bool> Values(Size, false);
+    
     bool Done = false;
     
     while (!Done) {
-        ASTNode CloneA = NodeA->Clone();
-        ASTNode CloneB = NodeB->Clone();
+        for (const auto& [InstructionIndex, VariableIndex] : CompiledA.VariablePushes)
+            CompiledA.Operations[InstructionIndex].Input = Values[VariableIndex];
         
-        auto CloneAVariables = GetVariables(CloneA);
-        auto CloneBVariables = GetVariables(CloneB);
+        for (const auto& [InstructionIndex, VariableIndex] : CompiledB.VariablePushes)
+            CompiledB.Operations[InstructionIndex].Input = Values[VariableIndex];
         
-        for (const auto& Variable : CloneAVariables) {
-            size_t Index = VariableIndices.at(Variable.first);
-            ASTNode Constant = std::make_unique<ConstantNode>(Values[Index]);
-            
-            for (ASTNode* VariableNode : Variable.second)
-                *VariableNode = Constant->Clone();
-        }
-        
-        for (const auto& Variable : CloneBVariables) {
-            size_t Index = VariableIndices.at(Variable.first);
-            ASTNode Constant = std::make_unique<ConstantNode>(Values[Index]);
-            
-            for (ASTNode* VariableNode : Variable.second)
-                *VariableNode = Constant->Clone();
-        }
-        
-        if (LogicEvaluator::EvaluateEquation(SerializeNode(CloneA)) != LogicEvaluator::EvaluateEquation(SerializeNode(CloneB))) return false;
+        if (!LogicEvaluator::EvaluateAndCompareByteCode(CompiledA.Operations, CompiledB.Operations)) return false;
         
         size_t i = 0;
         
-        for (; i < Size && Values[i]; i++)
+        while (i < Size && Values[i]) {
             Values[i] = false;
+            i++;
+        }
         
         if (i == Size)
             Done = true;
         else
             Values[i] = true;
     }
-
+    
     return true;
 }
